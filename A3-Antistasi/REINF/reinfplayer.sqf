@@ -21,8 +21,8 @@ if (!isMultiPlayer) then {_resourcesFIA = server getVariable "resourcesFIA"} els
 
 if (_coste > _resourcesFIA) exitWith {hint format ["You do not have enough money for this kind of unit (%1 € needed)",_coste]};
 
-
-if ((count units group player) + (count units rezagados) > 9) exitWith {hint "Your squad is full or you have too many scattered units with no radio contact"};
+_squadLimit = if(isMultiPlayer) then {10} else {20};
+if ((count units group player) + (count units rezagados) > _squadLimit - 1 ) exitWith {hint "Your squad is full or you have too many scattered units with no radio contact"};
 if (random 20 <= skillFIA) then {_tipoUnidad = _arrayTipoUnidad select 1};
 _unit = group player createUnit [_tipounidad, position player, [], 0, "NONE"];
 

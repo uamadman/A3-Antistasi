@@ -24,11 +24,11 @@ if (random 100 < _chance) then
 	{
 	if (_lado == malos) then
 		{
-		if ([vehNATOPlane] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 Planes Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 Planes Unavailable<br/>",_texto,nameMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehNATOPlane > 0) then {_texto = format ["%1 %2 Planes Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 Planes Unavailable<br/>",_texto,nameMalos]}
 		}
 	else
 		{
-		if ([vehCSATPlane] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 Planes Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 Planes Unavailable<br/>",_texto,nameMuyMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehCSATPlane > 0) then {_texto = format ["%1 %2 Planes Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 Planes Unavailable<br/>",_texto,nameMuyMalos]}
 		};
 	};
 if (random 100 < _chance) then
@@ -57,22 +57,22 @@ if (random 100 < _chance) then
 	{
 	if (_lado == malos) then
 		{
-		if ([vehNATOTank] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 Tanks Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 Tanks Unavailable<br/>",_texto,nameMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehNATOTank > 0) then {_texto = format ["%1 %2 Tanks Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 Tanks Unavailable<br/>",_texto,nameMalos]}
 		}
 	else
 		{
-		if ([vehCSATTank] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 Tanks Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 Tanks Unavailable<br/>",_texto,nameMuyMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehCSATTank > 0) then {_texto = format ["%1 %2 Tanks Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 Tanks Unavailable<br/>",_texto,nameMuyMalos]}
 		};
 	};
 if (random 100 < _chance) then
 	{
 	if (_lado == malos) then
 		{
-		if ([vehNATOAA] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 AA Tanks Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 AA Tanks Unavailable<br/>",_texto,nameMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehNATOAA > 0) then {_texto = format ["%1 %2 AA Tanks Available<br/>",_texto,nameMalos]} else {_texto = format ["%1 %2 AA Tanks Unavailable<br/>",_texto,nameMalos]}
 		}
 	else
 		{
-		if ([vehCSATAA] call A3A_fnc_vehAvailable) then {_texto = format ["%1 %2 AA Tanks Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 AA Tanks Unavailable<br/>",_texto,nameMuyMalos]}
+		if ({[_x] call A3A_fnc_vehAvailable} count vehCSATAA > 0) then {_texto = format ["%1 %2 AA Tanks Available<br/>",_texto,nameMuyMalos]} else {_texto = format ["%1 %2 AA Tanks Unavailable<br/>",_texto,nameMuyMalos]}
 		};
 	};
 

@@ -24,4 +24,4 @@ while {_pos isEqualTo []} do
 	};
 moto = createVehicle [_tipoBike,_pos, [], 10, "NONE"];
 
-[moto] call A3A_fnc_AIVEHinit;
+[moto, _lado] call A3A_fnc_AIVEHinit;

@@ -59,13 +59,11 @@ if ((not(_arma in _armasFinal)) and (not(_arma in unlockedWeapons))) then
 	};
 } forEach _armas;
 
-if (count _armasFinal > 0) then
-	{
-	for "_i" from 0 to (count _armasFinal) - 1 do
-		{
+if (count _armasFinal > 0) then {
+	for "_i" from 0 to (count _armasFinal) - 1 do {
 		_destino addWeaponCargoGlobal [_armasFinal select _i,_armasFinalCount select _i];
-		};
 	};
+};
 
 _municionFinal = [];
 _municionFinalCount = [];

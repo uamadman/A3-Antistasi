@@ -1,5 +1,7 @@
 if (!isServer and hasInterface) exitWith{};
-private ["_marcador","_vehiculos","_grupos","_soldados","_posicion","_pos","_size","_frontera","_lado","_cfg","_esFIA","_garrison","_antena","_tam","_buildings","_mrk","_cuenta","_tipoGrupo","_grupo","_tipoUnit","_tipoVeh","_veh","_unit","_bandera","_caja","_roads","_mrkMar","_vehicle","_vehCrew","_grupoVeh","_dist","_road","_roadCon","_dirVeh","_bunker","_dir","_posF"];
+private ["_marcador","_vehiculos","_grupos","_soldados","_posicion","_pos","_size","_frontera","_lado","_cfg","_esFIA",
+"_garrison","_antena","_tam","_buildings","_mrk","_cuenta","_tipoGrupo","_grupo","_tipoUnit","_tipoVeh","_veh","_unit",
+"_bandera","_caja","_roads","_mrkMar","_vehicle","_grupoVeh","_dist","_road","_roadCon","_dirVeh","_bunker","_dir","_posF"];
 _marcador = _this select 0;
 
 _vehiculos = [];
@@ -93,71 +95,55 @@ if (_patrol) then
 		};
 	};
 
-if ((_frontera) and (spawner getVariable _marcador!=2) and (_marcador in puestos)) then
-	{
+if ((_frontera) and (spawner getVariable _marcador!=2) and (_marcador in puestos)) then {
 	_grupo = createGroup _lado;
-	_tipoUnit = if (_lado==malos) then {staticCrewmalos} else {staticCrewMuyMalos};
+	_tipoUnit = if (_lado==malos) then {selectRandom staticCrewmalos} else {selectRandom staticCrewMuyMalos};
 	_tipoVeh = if (_lado == malos) then {NATOMortar} else {CSATMortar};
 	_pos = [_posicion] call A3A_fnc_mortarPos;
 	_veh = _tipoVeh createVehicle _pos;
-	_nul=[_veh] execVM "scripts\UPSMON\MON_artillery_add.sqf";
+	_nul = [_veh] execVM "scripts\UPSMON\MON_artillery_add.sqf";
 	_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
 	[_unit,_marcador] call A3A_fnc_NATOinit;
 	_unit moveInGunner _veh;
 	_soldados pushBack _unit;
 	_vehiculos pushBack _veh;
 	sleep 1;
-	};
+};
 
 _ret = [_marcador,_size,_lado,_frontera] call A3A_fnc_milBuildings;
 _grupos pushBack (_ret select 0);
 _vehiculos append (_ret select 1);
 _soldados append (_ret select 2);
 
-_tipoVeh = if (_lado == malos) then {NATOFlag} else {CSATFlag};
-_bandera = createVehicle [_tipoVeh, _posicion, [],0, "CAN_COLLIDE"];
-_bandera allowDamage false;
-[_bandera,"take"] remoteExec ["A3A_fnc_flagaction",[buenos,civilian],_bandera];
+_bandera = [_lado, _posicion] call A3A_fnc_createFlag;
 _vehiculos pushBack _bandera;
 
 _caja = objNull;
-if (_lado == malos) then
-	{
+if (_lado == malos) then {
 	_caja = NATOAmmoBox createVehicle _posicion;
-	_nul = [_caja] call A3A_fnc_NATOcrate;
-	}
-else
-	{
+} else {
 	_caja = CSATAmmoBox createVehicle _posicion;
-	_nul = [_caja] call A3A_fnc_CSATcrate;
-	};
+};
+_nul = [_caja, _lado] call A3A_fnc_fillAmmoCrate;
 _vehiculos pushBack _caja;
 _caja call jn_fnc_logistics_addAction;
-{_nul = [_x] call A3A_fnc_AIVEHinit;} forEach _vehiculos;
+{_nul = [_x, _lado] call A3A_fnc_AIVEHinit;} forEach _vehiculos;
 _roads = _posicion nearRoads _size;
 
-if ((_marcador in puertos) and (spawner getVariable _marcador!=2) and !hayIFA) then
-	{
+if ((_marcador in puertos) and (spawner getVariable _marcador!=2) and !hayIFA) then {
 	_tipoVeh = if (_lado == malos) then {vehNATOBoat} else {vehCSATBoat};
-	if ([_tipoVeh] call A3A_fnc_vehAvailable) then
-		{
+	if ([_tipoVeh] call A3A_fnc_vehAvailable) then {
 		_mrkMar = seaSpawn select {getMarkerPos _x inArea _marcador};
 		_pos = (getMarkerPos (_mrkMar select 0)) findEmptyPosition [0,20,_tipoVeh];
-		_vehicle=[_pos, 0,_tipoVeh, _lado] call bis_fnc_spawnvehicle;
-		_veh = _vehicle select 0;
-		[_veh] call A3A_fnc_AIVEHinit;
-		_vehCrew = _vehicle select 1;
-		{[_x,_marcador] call A3A_fnc_NATOinit} forEach _vehCrew;
+		_vehicle = [_pos, 0,_tipoVeh, _lado, _marcador] call A3A_fnc_spawnVehicle;
 		_grupoVeh = _vehicle select 2;
-		_soldados = _soldados + _vehCrew;
+		_soldados = _soldados + (_vehicle select 1);
 		_grupos pushBack _grupoVeh;
-		_vehiculos pushBack _veh;
+		_vehiculos pushBack (_vehicle select 0);
 		sleep 1;
-		};
+	};
 	{_caja addItemCargoGlobal [_x,2]} forEach swoopShutUp;
-	}
-else
-	{
+} else {
 	if (_frontera) then
 		{
 		if (spawner getVariable _marcador!=2) then
@@ -185,10 +171,10 @@ else
 					_vehiculos pushBack _veh;
 					_veh setPos _pos;
 					_veh setDir _dirVeh + 180;
-					_tipoUnit = if (_lado==malos) then {staticCrewmalos} else {staticCrewMuyMalos};
+					_tipoUnit = if (_lado==malos) then {selectRandom staticCrewmalos} else {selectRandom staticCrewMuyMalos};
 					_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
 					[_unit,_marcador] call A3A_fnc_NATOinit;
-					[_veh] call A3A_fnc_AIVEHinit;
+					[_veh, _lado] call A3A_fnc_AIVEHinit;
 					_unit moveInGunner _veh;
 					_soldados pushBack _unit;
 					}
@@ -200,7 +186,7 @@ else
 						{
 						_veh = vehFIAArmedCar createVehicle getPos _road;
 						_veh setDir _dirveh + 90;
-						_nul = [_veh] call A3A_fnc_AIVEHinit;
+						_nul = [_veh, _lado] call A3A_fnc_AIVEHinit;
 						_vehiculos pushBack _veh;
 						sleep 1;
 						_unit = _grupo createUnit [FIARifleman, _posicion, [], 0, "NONE"];
@@ -222,7 +208,7 @@ if (count _roads != 0) then
 		_veh = createVehicle [selectRandom _tipoVeh, _pos, [], 0, "NONE"];
 		_veh setDir random 360;
 		_vehiculos pushBack _veh;
-		_nul = [_veh] call A3A_fnc_AIVEHinit;
+		_nul = [_veh, _lado] call A3A_fnc_AIVEHinit;
 		sleep 1;
 		};
 	};
@@ -274,27 +260,9 @@ for "_i" from 0 to (count _array - 1) do
 	};
 
 
-if (_marcador in puertos) then
-	{
+if (_marcador in puertos) then {
 	_caja addItemCargo ["V_RebreatherIA",round random 5];
 	_caja addItemCargo ["G_I_Diving",round random 5];
-	};
+};
 
-waitUntil {sleep 1; (spawner getVariable _marcador == 2)};
-
-deleteMarker _mrk;
-//{if ((!alive _x) and (not(_x in destroyedBuildings))) then {destroyedBuildings = destroyedBuildings + [position _x]; publicVariableServer "destroyedBuildings"}} forEach _buildings;
-{
-if (alive _x) then
-	{
-	deleteVehicle _x
-	};
-} forEach _soldados;
-//if (!isNull _periodista) then {deleteVehicle _periodista};
-{deleteGroup _x} forEach _grupos;
-{
-if (!(_x in staticsToSave)) then
-	{
-	if ((!([distanciaSPWN-_size,1,_x,buenos] call A3A_fnc_distanceUnits))) then {deleteVehicle _x}
-	};
-} forEach _vehiculos;
+[_marcador, _soldados, _vehiculos, [_mrk]] call A3A_fnc_deleteBase;

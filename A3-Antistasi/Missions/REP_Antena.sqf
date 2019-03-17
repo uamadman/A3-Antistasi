@@ -23,10 +23,10 @@ if (spawner getVariable _marcador != 2) then
 	_road = [_posicion] call A3A_fnc_findNearestGoodRoad;
 	_pos = position _road;
 	_pos = _pos findEmptyPosition [1,60,"B_T_Truck_01_repair_F"];
-	_veh = createVehicle [vehNATORepairTruck, _pos, [], 0, "NONE"];
+	_veh = createVehicle [selectRandom vehNATORepairTruck, _pos, [], 0, "NONE"];
 	_veh allowdamage false;
 	_veh setDir (getDir _road);
-	_nul = [_veh] call A3A_fnc_AIVEHinit;
+	_nul = [_veh, malos] call A3A_fnc_AIVEHinit;
 	_grupo = createGroup malos;
 
 	sleep 5;

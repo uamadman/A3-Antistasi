@@ -47,19 +47,23 @@ if (_tipoVeh isKindOf "Plane") then
 
 if (_exit) exitWith {hint format ["You cannot garage an air vehicle while you are not near an Aiport which belongs to %1. Place your HQ near an airbase flag in order to be able to garage it",nameBuenos]};
 
-if (_veh in staticsToSave) then {staticsToSave = staticsToSave - [_veh]; publicVariable "staticsToSave"};
+if (_veh in staticsToSave) then {
+    staticsToSave = staticsToSave - [_veh];
+    publicVariable "staticsToSave"
+};
 
 [_veh,true] call A3A_fnc_vaciar;
-if (_veh in reportedVehs) then {reportedVehs = reportedVehs - [_veh]; publicVariable "reportedVehs"};
+if (_veh in reportedVehs) then {
+    reportedVehs = reportedVehs - [_veh];
+    publicVariable "reportedVehs"
+};
+
 if (_veh isKindOf "StaticWeapon") then {deleteVehicle _veh};
-if (_pool) then
-	{
+if (_pool) then {
 	vehInGarage = vehInGarage + [_tipoVeh];
 	publicVariable "vehInGarage";
 	hint format ["Vehicle added to %1 Garage",nameBuenos];
-	}
-else
-	{
+} else {
 	personalGarage = personalGarage + [_tipoVeh];
 	hint "Vehicle added to Personal Garage";
-	};
+};

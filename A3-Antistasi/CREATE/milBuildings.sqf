@@ -1,4 +1,5 @@
-private ["_posicion","_size","_buildings","_grupo","_tipoUnit","_lado","_building","_tipoB","_frontera","_tipoVeh","_veh","_vehiculos","_soldados","_pos","_ang","_marcador","_unit","_return"];
+private ["_posicion","_size","_buildings","_grupo","_lado","_building","_tipoB","_frontera","_tipoVeh",
+"_veh","_vehiculos","_soldados","_pos","_ang","_marcador","_unit","_return"];
 _marcador = _this select 0;
 _posicion = getMarkerPos _marcador;
 _size = _this select 1;
@@ -13,10 +14,8 @@ _vehiculos = [];
 _soldados = [];
 
 _grupo = createGroup _lado;
-_tipoUnit = if (_lado==malos) then {staticCrewmalos} else {staticCrewMuyMalos};
 
-for "_i" from 0 to (count _buildings) - 1 do
-	{
+for "_i" from 0 to (count _buildings) - 1 do {
 	if (spawner getVariable _marcador == 2) exitWith {};
 	_building = _buildings select _i;
 	/*
@@ -31,64 +30,44 @@ for "_i" from 0 to (count _buildings) - 1 do
 			];
 		};*/
 	_tipoB = typeOf _building;
-	if ((_tipoB == "Land_HelipadSquare_F") and (!_frontera)) then
-		{
-		_tipoVeh = if (_lado == malos) then {vehNATOPatrolHeli} else {vehCSATPatrolHeli};
-		_veh = createVehicle [_tipoVeh, position _building, [],0, "CAN_COLLIDE"];
-		_veh setDir (getDir _building);
-		_vehiculos pushBack _veh;
-		}
-	else
-		{
-		if 	((_tipoB == "Land_Cargo_HQ_V1_F") or (_tipoB == "Land_Cargo_HQ_V2_F") or (_tipoB == "Land_Cargo_HQ_V3_F")) then
-			{
-			_tipoVeh = if (_lado == malos) then {staticAAmalos} else {staticAAmuyMalos};
-			_veh = createVehicle [_tipoVeh, (_building buildingPos 8), [],0, "CAN_COLLIDE"];
-			_veh setPosATL [(getPos _building select 0),(getPos _building select 1),(getPosATL _veh select 2)];
-			_veh setDir (getDir _building);
-			_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
-			[_unit,_marcador] call A3A_fnc_NATOinit;
-			_unit moveInGunner _veh;
-			_soldados pushBack _unit;
-			_vehiculos pushBack _veh;
-			}
-		else
-			{
-			if 	((_tipoB == "Land_Cargo_Patrol_V1_F") or (_tipoB == "Land_Cargo_Patrol_V2_F") or (_tipoB == "Land_Cargo_Patrol_V3_F")) then
-				{
-				_tipoVeh = if (_lado == malos) then {NATOMG} else {CSATMG};
-				_veh = createVehicle [_tipoVeh, (_building buildingPos 1), [], 0, "CAN_COLLIDE"];
-				_ang = (getDir _building) - 180;
-				_pos = [getPosATL _veh, 2.5, _ang] call BIS_Fnc_relPos;
-				_veh setPosATL _pos;
-				_veh setDir (getDir _building) - 180;
-				_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
-				[_unit,_marcador] call A3A_fnc_NATOinit;
-				_unit moveInGunner _veh;
-				_soldados pushBack _unit;
-				_vehiculos pushBack _veh;
-				}
-			else
-				{
-				if 	(_tipoB in listbld) then
-					{
-					_tipoVeh = if (_lado == malos) then {NATOMG} else {CSATMG};
-					_veh = createVehicle [_tipoVeh, (_building buildingPos 11), [], 0, "CAN_COLLIDE"];
-					_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
-					[_unit,_marcador] call A3A_fnc_NATOinit;
-					_unit moveInGunner _veh;
-					_soldados pushBack _unit;
-					_vehiculos pushBack _veh;
-					sleep 0.5;
-					_veh = createVehicle [_tipoVeh, (_building buildingPos 13), [], 0, "CAN_COLLIDE"];
-					_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
-					[_unit,_marcador] call A3A_fnc_NATOinit;
-					_unit moveInGunner _veh;
-					_soldados pushBack _unit;
-					_vehiculos pushBack _veh;
-					};
-				};
-			};
-		};
-	};
+
+    switch(true) do {
+        case ((_tipoB == "Land_HelipadSquare_F") and (!_frontera)): {
+            _tipoVeh = if (_lado == malos) then {vehNATOPatrolHeli} else {vehCSATPatrolHeli};
+    		_veh = createVehicle [_tipoVeh, position _building, [],0, "CAN_COLLIDE"];
+    		_veh setDir (getDir _building);
+    		_vehiculos pushBack _veh;
+        };
+        case (_tipoB in ["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"]): {
+			_mannedStatic = ['AA', _grupo,
+			    [getPos _building select 0, getPos _building select 1,(_building buildingPos 8) select 2],
+			    (getDir _building), _marcador] call A3A_fnc_createMannedStatic;
+            _soldados pushBack (_mannedStatic select 1);
+			_vehiculos pushBack (_mannedStatic select 0);
+
+        };
+        case (_tipoB in ["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F"]): {
+            _mannedStatic = ['raised', _grupo,
+			    [_building buildingPos 1, 2.5, (getDir _building) - 180] call BIS_Fnc_relPos,
+			    (getDir _building) - 180, _marcador] call A3A_fnc_createMannedStatic;
+            _soldados pushBack (_mannedStatic select 1);
+			_vehiculos pushBack (_mannedStatic select 0);
+        };
+        case (_tipoB in listbld): {
+
+            _mannedStatic = ['raised', _grupo,
+			    (_building buildingPos 11),
+			    false, _marcador] call A3A_fnc_createMannedStatic;
+            _soldados pushBack (_mannedStatic select 1);
+			_vehiculos pushBack (_mannedStatic select 0);
+			sleep 0.5;
+
+            _mannedStatic = ['raised', _grupo,
+			    (_building buildingPos 13),
+			    false, _marcador] call A3A_fnc_createMannedStatic;
+            _soldados pushBack (_mannedStatic select 1);
+			_vehiculos pushBack (_mannedStatic select 0);
+        };
+    };
+};
 [_grupo,_vehiculos,_soldados]

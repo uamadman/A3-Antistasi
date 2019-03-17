@@ -17,7 +17,7 @@ _fechalim = [date select 0, date select 1, date select 2, date select 3, (date s
 _fechalimnum = dateToNumber _fechalim;
 
 _nombredest = [_marcador] call A3A_fnc_localizar;
-_tipoVeh = if (_lado == malos) then {vehNATOAmmoTruck} else {vehCSATAmmoTruck};
+_tipoVeh = if (_lado == malos) then {selectRandom vehNATOAmmoTruck} else {selectRandom vehCSATAmmoTruck};
 _size = [_marcador] call A3A_fnc_sizeMarker;
 
 _road = [_posicion] call A3A_fnc_findNearestGoodRoad;
@@ -31,14 +31,13 @@ misiones pushBack ["LOG","CREATED"]; publicVariable "misiones";
 
 waitUntil {sleep 1;(dateToNumber date > _fechalimnum) or ((spawner getVariable _marcador != 2) and !(lados getVariable [_marcador,sideUnknown] == buenos))};
 _bonus = if (_dificil) then {2} else {1};
-if ((spawner getVariable _marcador != 2) and !(lados getVariable [_marcador,sideUnknown] == buenos)) then
-	{
+if ((spawner getVariable _marcador != 2) and !(lados getVariable [_marcador,sideUnknown] == buenos)) then {
 	//sleep 10;
 
 	_camion = _tipoVeh createVehicle _pos;
 	_camion setDir (getDir _road);
 	_camionCreado = true;
-	if (_lado == malos) then {[_camion] call A3A_fnc_NATOcrate} else {[_camion] call A3A_fnc_CSATcrate};
+	[_camion, _lado] call A3A_fnc_fillAmmoCrate;
 
 	_mrk = createMarkerLocal [format ["%1patrolarea", floor random 100], _pos];
 	_mrk setMarkerShapeLocal "RECTANGLE";
@@ -87,17 +86,14 @@ if ((spawner getVariable _marcador != 2) and !(lados getVariable [_marcador,side
 		{if (_x distance _camion < 500) then {[10*_bonus,_x] call A3A_fnc_playerScoreAdd}} forEach (allPlayers - (entities "HeadlessClient_F"));
 		[5*_bonus,theBoss] call A3A_fnc_playerScoreAdd;
 		};
-	}
-else
-	{
+} else {
 	["LOG",[format ["We've spotted an Ammotruck in an %1. Go there and destroy or steal it before %2:%3.",_nombredest,numberToDate [2035,_fechalimnum] select 3,numberToDate [2035,_fechalimnum] select 4],"Steal or Destroy Ammotruck",_marcador],_posicion,"FAILED","rearm"] call A3A_fnc_taskUpdate;
 	[-1200*_bonus] remoteExec ["A3A_fnc_timingCA",2];
 	[-10*_bonus,theBoss] call A3A_fnc_playerScoreAdd;
-	};
+};
 
 _nul = [1200,"LOG"] spawn A3A_fnc_borrarTask;
-if (_camionCreado) then
-	{
+if (_camionCreado) then {
 	{deleteVehicle _x} forEach units _grupo;
 	deleteGroup _grupo;
 	{deleteVehicle _x} forEach units _grupo1;
@@ -105,4 +101,4 @@ if (_camionCreado) then
 	deleteMarker _mrk;
 	waitUntil {sleep 1; !([300,1,_camion,buenos] call A3A_fnc_distanceUnits)};
 	deleteVehicle _camion;
-	};
+};

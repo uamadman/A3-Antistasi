@@ -1,32 +1,25 @@
-if (hasInterface) then
-	{
+if (hasInterface) then {
 	waitUntil {!isNull player};
 	waitUntil {player == player};
 	player removeweaponGlobal "itemmap";
 	player removeweaponGlobal "itemgps";
-	};
-if (isMultiplayer) then
-	{
-	if (!isServer) then
-		{
+};
+if (isMultiplayer) then {
+	if (!isServer) then {
 		call compile preprocessFileLineNumbers "initFuncs.sqf";
 		call compile preprocessFileLineNumbers "initVar.sqf";
 		waitUntil {!isNil "initVar"}; diag_log format ["Antistasi MP Client. initVar is public. Version %1",antistasiVersion];
-		}
-	else
-		{
+	} else {
 		waitUntil {sleep 0.5;(!isNil "serverInitDone")};
-		};
-	[] execVM "briefing.sqf";
 	};
-if (!hasInterface) exitWith
-	{
+	[] execVM "briefing.sqf";
+};
+if (!hasInterface) exitWith {
 	if (worldName == "Tanoa") then {call compile preprocessFileLineNumbers "roadsDB.sqf"} else {if (worldName == "Altis") then {call compile preprocessFileLineNumbers "roadsDBAltis.sqf"}};
 	[clientOwner] remoteExec ["A3A_fnc_addHC",2];
-	};
+};
 _isJip = _this select 1;
-if (isMultiplayer) then
-	{
+if (isMultiplayer) then {
 	if (side player == buenos) then {player setVariable ["elegible",true,true]};
 	musicON = false;
 	//waitUntil {scriptdone _introshot};
@@ -39,28 +32,21 @@ if (isMultiplayer) then
 	diag_log format ["Antistasi MP Client: JIP?: %1",_isJip];
 	if (hayTFAR) then {[] execVM "orgPlayers\radioJam.sqf"};//reestablecer cuando controle las variables
 	tkPunish = if (paramsArray select 5 == 1) then {true} else {false};
-	if ((side player == buenos) and tkPunish) then
-		{
-		player addEventHandler ["Fired",
-			{
+	if ((side player == buenos) and tkPunish) then {
+		player addEventHandler ["Fired", {
 			_tipo = _this select 1;
-			if ((_tipo == "Put") or (_tipo == "Throw")) then
-				{
-				if (player distance petros < 50) then
-					{
+			if ((_tipo == "Put") or (_tipo == "Throw")) then {
+				if (player distance petros < 50) then {
 					deleteVehicle (_this select 6);
-					if (_tipo == "Put") then
-						{
+					if (_tipo == "Put") then {
 						if (player distance petros < 10) then {[player,60] spawn A3A_fnc_castigo};
-						};
 					};
 				};
-			}];
-		};
+			};
+		}];
+	};
 	if (!isNil "placementDone") then {_isJip = true};//workaround for BIS fail on JIP detection
-	}
-else
-	{
+} else {
 	theBoss = player;
 	grupo = group player;
 	if (worldName == "Tanoa") then {grupo setGroupId ["Pulu","GroupColor4"]} else {grupo setGroupId ["Stavros","GroupColor4"]};
@@ -69,14 +55,14 @@ else
 	player hcSetGroup [group player];
 	waitUntil {/*(scriptdone _introshot) and */(!isNil "serverInitDone")};
 	//_nul = addMissionEventHandler ["Loaded", {_nul = [] execVM "statistics.sqf";_nul = [] execVM "reinitY.sqf";}];
-	};
+};
 [] execVM "CREATE\ambientCivs.sqf";
 private ["_colorbuenos", "_colormuyMalos"];
 _colorbuenos = buenos call BIS_fnc_sideColor;
 _colormuyMalos = muyMalos call BIS_fnc_sideColor;
 _posicion = if (side player == side (group petros)) then {position petros} else {getMarkerPos "respawn_west"};
 {
-_x set [3, 0.33]
+    _x set [3, 0.33]
 } forEach [_colorbuenos, _colormuyMalos];
 _introShot =
 	[
@@ -97,23 +83,18 @@ disableUserInput false;
 player addWeaponGlobal "itemmap";
 if !(hayIFA) then {player addWeaponGlobal "itemgps"};
 player setVariable ["spawner",true,true];
-if (isMultiplayer) then
-	{
+if (isMultiplayer) then {
 	if (paramsArray select 8 == 1) then {[] execVM "playerMarkers.sqf"};
-	};
-if (!hayACE) then
-	{
+};
+if (!hayACE) then {
 	[player] execVM "Revive\initRevive.sqf";
 	tags = [] execVM "tags.sqf";
-	}
-else
-	{
+} else {
 	if (hayACEhearing) then {player addItem "ACE_EarPlugs"};
 	if (!hayACEMedical) then {[player] execVM "Revive\initRevive.sqf"};
-	};
+};
 
-if (player getVariable ["pvp",false]) exitWith
-	{
+if (player getVariable ["pvp",false]) exitWith {
 	moto = objNull;
 	pvpEnabled = if (paramsArray select 7 == 1) then {true} else {false};
 	if ((!_isJIP) or !pvpEnabled) then
@@ -166,21 +147,18 @@ if (player getVariable ["pvp",false]) exitWith
 				};
 			};
 		}];
-	player addEventHandler ["InventoryOpened",
-		{
+	player addEventHandler ["InventoryOpened", {
 		_override = false;
 		_caja = typeOf (_this select 1);
 		if ((_caja == NATOAmmoBox) or (_caja == CSATAmmoBox)) then {_override = true};
 		_override
-		}];
+	}];
 	_nombre = if (side player == malos) then {nameMalos} else {nameMuyMalos};
 	["TaskFailed", ["", format ["%1 joined %2 SpecOps",name player,_nombre]]] remoteExec ["BIS_fnc_showNotification",[buenos,civilian]];
 	waituntil {!isnull (finddisplay 46)};
-	gameMenu = (findDisplay 46) displayAddEventHandler ["KeyDown",
-		{
+	gameMenu = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 		_handled = FALSE;
-		if (_this select 1 == 207) then
-			{
+		if (_this select 1 == 207) then {
 			if (!hayACEhearing) then
 				{
 				if (soundVolume <= 0.5) then
@@ -194,18 +172,15 @@ if (player getVariable ["pvp",false]) exitWith
 					hintSilent "You've inserted your ear plugs.";
 					};
 				};
-			}
-		else
-			{
-			if (_this select 1 == 21) then
-				{
+		} else {
+			if (_this select 1 == 21) then {
 				closedialog 0;
 				_nul = createDialog "NATO_player";
 				};
-			};
+		};
 		_handled
-		}];
-	};
+	}];
+};
 
 player setVariable ["owner",player,true];
 player setVariable ["punish",0,true];
@@ -219,19 +194,14 @@ player setUnitTrait ["audibleCoef",0.8];
 
 if (activeGREF) then {[player] call A3A_fnc_RHSdress};
 player setvariable ["compromised",0];
-player addEventHandler ["FIRED",
-	{
+player addEventHandler ["FIRED", {
 	_player = _this select 0;
-	if (captive _player) then
-		{
+	if (captive _player) then {
 		//if ({((side _x== muyMalos) or (side _x== malos)) and (_x knowsAbout player > 1.4)} count allUnits > 0) then
-		if ({if (((side _x == malos) or (side _x == muyMalos)) and (_x distance player < 300)) exitWith {1}} count allUnits > 0) then
-			{
+		if ({if (((side _x == malos) or (side _x == muyMalos)) and (_x distance player < 300)) exitWith {1}} count allUnits > 0) then {
 			[_player,false] remoteExec ["setCaptive",0,_player];
 			_player setCaptive false;
-			}
-		else
-			{
+		} else {
 			_ciudad = [ciudades,_player] call BIS_fnc_nearestPosition;
 			_size = [_ciudad] call A3A_fnc_sizeMarker;
 			_datos = server getVariable _ciudad;
@@ -247,44 +217,35 @@ player addEventHandler ["FIRED",
 						};
 					};
 				};
-			};
-		}
+		};
 	}
-	];
-player addEventHandler ["InventoryOpened",
-	{
+}];
+player addEventHandler ["InventoryOpened",{
 	private ["_jugador","_contenedor","_tipo"];
 	_control = false;
 	_jugador = _this select 0;
-	if (captive _jugador) then
-		{
+	if (captive _jugador) then {
 		_contenedor = _this select 1;
 		_tipo = typeOf _contenedor;
-		if (((_contenedor isKindOf "Man") and (!alive _contenedor)) or (_tipo == NATOAmmoBox) or (_tipo == CSATAmmoBox)) then
-			{
-			if ({if (((side _x== muyMalos) or (side _x== malos)) and (_x knowsAbout _jugador > 1.4)) exitWith {1}} count allUnits > 0) then
-				{
+		if (((_contenedor isKindOf "Man") and (!alive _contenedor)) or (_tipo == NATOAmmoBox) or (_tipo == CSATAmmoBox)) then {
+			if ({if (((side _x== muyMalos) or (side _x== malos)) and (_x knowsAbout _jugador > 1.4)) exitWith {1}} count allUnits > 0) then {
 				[_jugador,false] remoteExec ["setCaptive",0,_jugador];
 				_jugador setCaptive false;
-				}
-			else
-				{
+			} else {
 				_ciudad = [ciudades,_jugador] call BIS_fnc_nearestPosition;
 				_size = [_ciudad] call A3A_fnc_sizeMarker;
 				_datos = server getVariable _ciudad;
-				if (random 100 < _datos select 2) then
-					{
-					if (_jugador distance getMarkerPos _ciudad < _size * 1.5) then
-						{
+				if (random 100 < _datos select 2) then {
+					if (_jugador distance getMarkerPos _ciudad < _size * 1.5) then {
 						[_jugador,false] remoteExec ["setCaptive",0,_jugador];
 						_jugador setCaptive false;
-						};
 					};
 				};
 			};
 		};
+	};
 	_control
-	}];
+}];
 /*
 player addEventHandler ["InventoryClosed",
 	{
@@ -339,35 +300,53 @@ player addEventHandler ["HandleHeal",
 		}
 	}
 	];
-player addEventHandler ["WeaponAssembled",
-	{
-	private ["_veh"];
-	_veh = _this select 1;
-	if (_veh isKindOf "StaticWeapon") then
-		{
-		if (not(_veh in staticsToSave)) then
-			{
-			staticsToSave pushBack _veh;
+player addEventHandler ["WeaponAssembled", {
+    params ["_unit", "_assembledWeapon"];
+
+    //START SCRIPT TO PREVENT AI SHOOTING AT YOUR SHINY NEW UAV AND AVOID HAVING TO HACK IT
+    _sideUnit = side _unit;
+	_sideStatic = side _assembledWeapon;
+	if((_sideStatic in [west, east, independent]) and (_sideStatic != _sideUnit)) then {
+		_assembledWeapon allowDamage false;
+
+		_group = createGroup _sideUnit;
+		_newUAV = createvehicle [typeOf _assembledWeapon, getPosATL _assembledWeapon, [], 0, "CAN_COLLIDE"];
+		_newUAV allowDamage false;
+		_newUAV setDir (getDir _assembledWeapon);
+		createVehicleCrew _newUAV;
+		_crew = crew _newUAV;
+		_crew joinsilent _group;
+		_group addVehicle _newUAV;
+		_group selectLeader (commander _newUAV);
+
+		{_assembledWeapon deleteVehicleCrew _x} forEach crew _assembledWeapon;
+		deleteVehicle _assembledWeapon;
+		_newUAV allowDamage true;
+		_assembledWeapon = _newUAV;
+	};
+    //END SCRIPT TO PREVENT AI SHOOTING AT YOUR SHINY NEW UAV AND AVOID HAVING TO HACK IT
+
+	if (_assembledWeapon isKindOf "StaticWeapon") then {
+		if (not(_assembledWeapon in staticsToSave)) then {
+			staticsToSave pushBack _assembledWeapon;
 			publicVariable "staticsToSave";
-			[_veh] call A3A_fnc_AIVEHinit;
-			};
-		_marcadores = marcadores select {lados getVariable [_x,sideUnknown] == buenos};
-		_pos = position _veh;
-		if (_marcadores findIf {_pos inArea _x} != -1) then {hint "Static weapon has been deployed for use in a nearby zone, and will be used by garrison militia if you leave it here the next time the zone spawns"};
-		}
-	else
-		{
-		_veh addEventHandler ["Killed",{[_this select 0] remoteExec ["A3A_fnc_postmortem",2]}];
+			[_assembledWeapon, side player] call A3A_fnc_AIVEHinit;
 		};
-	}];
-player addEventHandler ["WeaponDisassembled",
-		{
+		_marcadores = marcadores select {lados getVariable [_x,sideUnknown] == buenos};
+		_pos = position _assembledWeapon;
+		if (_marcadores findIf {_pos inArea _x} != -1) then {hint "Static weapon has been deployed for use in a nearby zone. If you leave it here it will be used by garrison militia the next time the zone spawns."};
+	} else {
+		_assembledWeapon addEventHandler ["Killed",{[_unit] remoteExec ["A3A_fnc_postmortem",2]}];
+	};
+}];
+
+player addEventHandler ["WeaponDisassembled", {
 		_bag1 = _this select 1;
 		_bag2 = _this select 2;
 		//_bag1 = objectParent (_this select 1);
 		//_bag2 = objectParent (_this select 2);
-		[_bag1] call A3A_fnc_AIVEHinit;
-		[_bag2] call A3A_fnc_AIVEHinit;
+		[_bag1, side player] call A3A_fnc_AIVEHinit;
+		[_bag2, side player] call A3A_fnc_AIVEHinit;
 		}
 	];
 
@@ -508,11 +487,10 @@ else
 	if (isNil "placementDone") then
 		{
 		waitUntil {!isNil "theBoss"};
-		if (player == theBoss) then
-		    {
+		if (player == theBoss) then {
+
 		    player setVariable ["score", 25,true];
-		    if (isMultiplayer) then
-		    	{
+		    if (isMultiplayer) then {
 		    	HC_comandante synchronizeObjectsAdd [player];
 				player synchronizeObjectsAdd [HC_comandante];
 		    	//_nul = [] execVM "Dialogs\initMenu.sqf";
@@ -525,18 +503,15 @@ else
 		    		_nul = [true] execVM "Dialogs\firstLoad.sqf";
 			    	};
 		    	diag_log "Antistasi MP Client. Client finished";
-		    	}
-		    else
-		    	{
+		    } else {
 		    	miembros = [];
-		    	player setUnitTrait ["medic",true];
-		    	player setUnitTrait ["engineer",true];
+		    	player setUnitTrait ["medic", true];
+		    	player setUnitTrait ["engineer", true];
+		    	player setUnitTrait ["explosiveSpecialist", true];
 		    	 _nul = [] execVM "Dialogs\firstLoad.sqf";
-		    	};
-		    }
-		else
-			{
-			player setVariable ["score", 0,true];
+		    };
+		} else {
+			player setVariable ["score", 0, true];
 			_nul = [true] execVM "Dialogs\firstLoad.sqf";
 			player setPos (getMarkerPos respawnBuenos);
 			};

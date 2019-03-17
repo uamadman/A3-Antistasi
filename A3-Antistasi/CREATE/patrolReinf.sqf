@@ -47,7 +47,13 @@ if (_land) then
 	_grupo = [_pos,_lado, _tipoGrupo] call A3A_fnc_spawnGroup;
 	_grupo addVehicle _veh;
 	{
-	if (_x == leader _x) then {_x assignAsDriver _veh;_x moveInDriver _veh} else {_x assignAsCargo _veh;_x moveInCargo _veh};
+	if (_x == leader _x) then {
+	    _x assignAsDriver _veh;
+	    _x moveInDriver _veh
+	} else {
+	    _x assignAsCargo _veh;
+	    _x moveInCargo _veh
+	};
 
 	if (vehicle _x == _x) then
 		{
@@ -58,7 +64,7 @@ if (_land) then
 		[_x] call A3A_fnc_NATOinit;
 		};
 	} forEach units _grupo;
-	[_veh] call A3A_fnc_AIVEHinit;
+	[_veh, _lado] call A3A_fnc_AIVEHinit;
 	[_veh,"Inf Truck."] spawn A3A_fnc_inmuneConvoy;
 	_grupo spawn A3A_fnc_attackDrillAI;
 	[_mrkOrigen,_posDestino,_grupo] call WPCreate;
@@ -83,27 +89,21 @@ else
 		};
 	if (count _pos == 0) then {_pos = _posorigen};
 
-	_vehicle=[_pos, _ang + 90,_tipoVeh, _lado] call bis_fnc_spawnvehicle;
+	_vehicle = [_pos, _ang + 90, _tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 	_veh = _vehicle select 0;
-	_vehCrew = _vehicle select 1;
 	_grupoVeh = _vehicle select 2;
 	{
-	[_x] call A3A_fnc_NATOinit;
-	_x addEventHandler ["Killed",{deleteVehicle (group (_this select 0) getVariable ["myPad",objNull])}];
+	    _x addEventHandler ["Killed",{deleteVehicle (group (_this select 0) getVariable ["myPad",objNull])}];
 	} forEach units _grupoVeh;
-	[_veh] call A3A_fnc_AIVEHinit;
 
 	_grupo = [_posOrigen,_lado,_tipoGrupo] call A3A_fnc_spawnGroup;
 	{
-	_x assignAsCargo _veh;
-	_x moveInCargo _veh;
-	if (vehicle _x == _x) then
-		{
-		deleteVehicle _x;
-		}
-	else
-		{
-		[_x] call A3A_fnc_NATOinit;
+	    _x assignAsCargo _veh;
+	    _x moveInCargo _veh;
+	    if (vehicle _x == _x) then {
+		    deleteVehicle _x;
+		} else {
+		    [_x] call A3A_fnc_NATOinit;
 		};
 	} forEach units _grupo;
 	_landPos = if (_tipoVeh isKindOf "Helicopter") then {[_posDestino, 0, 300, 10, 0, 0.20, 0,[],[[0,0,0],[0,0,0]]] call BIS_fnc_findSafePos} else {[0,0,0]};

@@ -139,7 +139,12 @@ _pos = getPosASL garageVeh;
 _dir = getDir garageVeh;
 _tipo = typeOf garageVeh;
 deleteVehicle garageVeh;
-if !(player inArea _cercano) then {hint "You need to be close to one of your garrisons to be able to retrieve a vehicle from your garage";["",0,0,5,0,0,4] spawn bis_fnc_dynamicText; comprado = nil; garageVeh = nil; cuentaGarage = nil};
+if !(player inArea _cercano) then {
+    hint "You need to be close to one of your garrisons to be able to retrieve a vehicle from your garage";
+    ["",0,0,5,0,0,4] spawn bis_fnc_dynamicText; comprado = nil;
+    garageVeh = nil;
+    cuentaGarage = nil
+};
 if ([player,300] call A3A_fnc_enemyNearCheck) then
 	{
 	hint "You cannot manage the Garage with enemies nearby";
@@ -153,7 +158,7 @@ garageVeh = nil;
 _garageVeh = createVehicle [_tipo, [0,0,1000], [], 0, "NONE"];
 _garageVeh setDir _dir;
 _garageVeh setPosASL _pos;
-[_garageVeh] call A3A_fnc_AIVEHinit;
+[_garageVeh, buenos] call A3A_fnc_AIVEHinit;
 if (_garageVeh isKindOf "Car") then {_garageVeh setPlateNumber format ["%1",name player]};
 //_pool = false;
 //if (vehInGarageShow isEqualTo vehInGarage) then {_pool = true};
@@ -177,7 +182,10 @@ else
 	_garageVeh setVariable ["duenyo",getPlayerUID player,true];
 	};
 cuentaGarage = nil;
-if (_garageVeh isKindOf "StaticWeapon") then {staticsToSave pushBack _garageVeh; publicVariable "staticsToSave"};
+if (_garageVeh isKindOf "StaticWeapon") then {
+    staticsToSave pushBack _garageVeh;
+    publicVariable "staticsToSave"
+};
 clearMagazineCargoGlobal _garageVeh;
 clearWeaponCargoGlobal _garageVeh;
 clearItemCargoGlobal _garageVeh;

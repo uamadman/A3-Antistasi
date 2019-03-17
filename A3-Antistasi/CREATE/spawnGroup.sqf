@@ -5,7 +5,7 @@ private ["_grupo","_cuenta","_cuentaRangos","_lider","_unidades","_index"];
 /*_posicion = _this select 0;
 _lado = _this select 1;
 _tipos = _this select 2;
-_override = if (count _this >3) then {_this select 3} else {false};
+_override = if (count _this > 3) then {_this select 3} else {false};
 _canBypass = if (count _this > 4) then {_this select 4} else {false};*/
 
 _allUnits = {(local _x) and (alive _x)} count allUnits;

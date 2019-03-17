@@ -127,7 +127,6 @@ class A3A
         class AIVEHinit {file="CREATE\AIVEHinit.sqf";};
         class cargoSeats {file="CREATE\cargoSeats.sqf";};
         class CIVinit {file="CREATE\CIVinit.sqf";};
-        class civVEHinit {file="CREATE\civVEHinit.sqf";};
         class cleanserVeh {file="CREATE\cleanserVeh.sqf";};
         class createAIaerop {file="CREATE\createAIaerop.sqf";};
         class createAIciudades {file="CREATE\createAIciudades.sqf";};
@@ -136,9 +135,12 @@ class A3A
         class createAIrecursos {file="CREATE\createAIrecursos.sqf";};
         class createCIV {file="CREATE\createCIV.sqf";};
         class createFIApuestos2 {file="CREATE\createFIApuestos2.sqf";};
+        class createFlag {file="CREATE\BaseComponents\createFlag.sqf";};
+        class createMannedStatic {file="CREATE\BaseComponents\createMannedStatic.sqf";};
         class createSDKGarrisons {file="CREATE\createSDKGarrisons.sqf";};
         class createSDKgarrisonsTemp {file="CREATE\createSDKgarrisonsTemp.sqf";};
         class CSATpunish {file="CREATE\CSATpunish.sqf";};
+        class deleteBase {file="CREATE\deleteBase.sqf";};
         class FIAinitBases {file="CREATE\FIAinitBases.sqf";};
         class garrisonReorg {file="CREATE\garrisonReorg.sqf";};
         class garrisonSize {file="CREATE\garrisonSize.sqf";};
@@ -154,6 +156,7 @@ class A3A
         class remoteBattle {file="CREATE\remoteBattle.sqf";};
         class removeVehFromPool {file="CREATE\removeVehFromPool.sqf";};
         class spawnGroup {file="CREATE\spawnGroup.sqf";};
+        class spawnVehicle {file="CREATE\spawnVehicle.sqf";};
         class vehAvailable {file="CREATE\vehAvailable.sqf";};
         class VEHdespawner {file="CREATE\VEHdespawner.sqf";};
         class wavedCA {file="CREATE\wavedCA.sqf";};
@@ -178,9 +181,8 @@ class A3A
 	{
         class ACEpvpReDress {file="Municion\ACEpvpReDress.sqf";};
         class arsenalManage {file="Municion\arsenalManage.sqf";};
-        class CSATCrate {file="Municion\CSATCrate.sqf";};
         class munitionTransfer {file="Municion\munitionTransfer.sqf";};
-        class NATOCrate {file="Municion\NATOCrate.sqf";};
+        class fillAmmoCrate {file="Municion\fillAmmoCrate.sqf";};
         class randomRifle {file="Municion\randomRifle.sqf";};
         class RHSdress {file="Municion\RHSdress.sqf";};
         class vaciar {file="Municion\vaciar.sqf";};

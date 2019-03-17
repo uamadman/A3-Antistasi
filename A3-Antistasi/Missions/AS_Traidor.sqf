@@ -83,7 +83,7 @@ _veh setDir _dirVeh;
 sleep 15;
 _veh allowDamage true;
 _traidor allowDamage true;
-_nul = [_veh] call A3A_fnc_AIVEHinit;
+_nul = [_veh, malos] call A3A_fnc_AIVEHinit;
 {_x disableAI "MOVE"; _x setUnitPos "UP"} forEach units _grptraidor;
 
 _mrk = createMarkerLocal [format ["%1patrolarea", floor random 100], getPos _casa];
@@ -95,7 +95,7 @@ _mrk setMarkerBrushLocal "DiagGrid";
 _mrk setMarkerAlphaLocal 0;
 
 _tipoGrupo = if (random 10 < tierWar) then {NATOSquad} else {[policeOfficer,policeGrunt,policeGrunt,policeGrunt,policeGrunt,policeGrunt,policeGrunt,policeGrunt]};
-_grupo = [_posicion,malos, NATOSquad] call A3A_fnc_spawnGroup;
+_grupo = [_posicion, malos, NATOSquad] call A3A_fnc_spawnGroup;
 sleep 1;
 if (random 10 < 2.5) then
 	{
@@ -105,7 +105,10 @@ if (random 10 < 2.5) then
 _nul = [leader _grupo, _mrk, "SAFE","SPAWNED", "NOVEH2", "NOFOLLOW"] execVM "scripts\UPSMON.sqf";
 {[_x,""] call A3A_fnc_NATOinit} forEach units _grupo;
 
-waitUntil {sleep 1; (dateToNumber date > _fechalimnum) or (not alive _traidor) or ({_traidor knowsAbout _x > 1.4} count ([500,0,_traidor,buenos] call A3A_fnc_distanceUnits) > 0)};
+waitUntil {
+    sleep 1;
+    (dateToNumber date > _fechalimnum) or (not alive _traidor) or ({_traidor knowsAbout _x > 1.4} count ([500,0,_traidor,buenos] call A3A_fnc_distanceUnits) > 0)
+};
 
 if ({_traidor knowsAbout _x > 1.4} count ([500,0,_traidor,buenos] call A3A_fnc_distanceUnits) > 0) then
 	{
@@ -209,3 +212,4 @@ waitUntil {sleep 1; !([distanciaSPWN,1,_x,buenos] call A3A_fnc_distanceUnits)};
 deleteVehicle _x
 } forEach units _grupo;
 deleteGroup _grupo;
+deleteMarker _mrk;

@@ -37,7 +37,7 @@ _camion addAction ["Delivery infos",
 	"",
 	"(isPlayer _this) and (_this == _this getVariable ['owner',objNull])"
 ];
-[_camion] call A3A_fnc_AIVEHinit;
+[_camion, buenos] call A3A_fnc_AIVEHinit;
 //{_x reveal _camion} forEach (allPlayers - (entities "HeadlessClient_F"));
 _camion setVariable ["destino",_nombredest,true];
 

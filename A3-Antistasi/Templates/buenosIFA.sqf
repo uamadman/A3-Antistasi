@@ -1,3 +1,4 @@
+
 SDKMortar = "LIB_M2_60";
 SDKMortarHEMag = "LIB_8Rnd_60mmHE_M2";
 SDKMortarSmokeMag = "not_supported";

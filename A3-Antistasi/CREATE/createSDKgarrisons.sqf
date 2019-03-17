@@ -17,8 +17,7 @@ _size = [_marcador] call A3A_fnc_sizeMarker;
 
 if (_marcador != "Synd_HQ") then
 	{
-	if (!(_marcador in ciudades)) then
-		{
+	if (!(_marcador in ciudades)) then {
 		_veh = createVehicle [SDKFlag, _posicion, [],0, "CAN_COLLIDE"];
 		if (hayIFA) then {_veh setFlagTexture SDKFlagTexture};
 		_veh allowDamage false;
@@ -27,7 +26,7 @@ if (_marcador != "Synd_HQ") then
 		//[_veh,"unit"] remoteExec ["A3A_fnc_flagaction",[buenos,civilian],_veh];
 		//[_veh,"vehicle"] remoteExec ["A3A_fnc_flagaction",[buenos,civilian],_veh];
 		//[_veh,"garage"] remoteExec ["A3A_fnc_flagaction",[buenos,civilian],_veh];
-		};
+	};
 	if ((_marcador in recursos) or (_marcador in fabricas)) then
 		{
 		if (not(_marcador in destroyedCities)) then
@@ -104,7 +103,7 @@ if (staticCrewBuenos in _garrison) then
 	_nul=[_veh] execVM "scripts\UPSMON\MON_artillery_add.sqf";
 	_unit assignAsGunner _veh;
 	_unit moveInGunner _veh;
-	[_veh] call A3A_fnc_AIVEHinit;
+	[_veh, side _unit] call A3A_fnc_AIVEHinit;
 	_soldados pushBack _unit;
 	} forEach (_garrison select {_x == staticCrewBuenos});
 	_garrison = _garrison - [staticCrewBuenos];
@@ -145,10 +144,9 @@ for "_i" from 0 to (count _grupos) - 1 do
 waitUntil {sleep 1; (spawner getVariable _marcador == 2)};
 
 {
-_soldado = _x;
-if (alive _soldado) then
-	{
-	deleteVehicle _x
+    _soldado = _x;
+    if (alive _soldado) then {
+	    deleteVehicle _x
 	};
 } forEach _soldados;
 {deleteVehicle _x} forEach _civs;

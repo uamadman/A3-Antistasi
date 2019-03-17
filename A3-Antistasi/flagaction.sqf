@@ -1,12 +1,7 @@
-private ["_flag","_tipo"];
-
 if (!hasInterface) exitWith {};
+params ["_flag","_tipo"];
 
-_flag = _this select 0;
-_tipo = _this select 1;
-
-switch _tipo do
-	{
+switch _tipo do {
 	case "take":
 		{
 		removeAllActions _flag;
@@ -110,11 +105,7 @@ switch _tipo do
 		if (isMultiplayer) then
 			{
 			_flag addAction ["Personal Garage", {nul = [true] spawn A3A_fnc_garage},nil,0,false,true,"","(isPlayer _this) and (_this == _this getVariable ['owner',objNull])",4];
-			_flag addAction ["Faction Garage", {nul = [false] spawn A3A_fnc_garage},nil,0,false,true,"","(isPlayer _this) and (_this == _this getVariable ['owner',objNull])",4];
 			}
-		else
-			{
-			_flag addAction ["Faction Garage", {nul = [false] spawn A3A_fnc_garage},nil,0,false,true,"","(isPlayer _this) and (_this == _this getVariable ['owner',objNull])",4]
-			};
+		_flag addAction ["Faction Garage", {nul = [false] spawn A3A_fnc_garage},nil,0,false,true,"","(isPlayer _this) and (_this == _this getVariable ['owner',objNull])",4];
 		};
-	};
+};

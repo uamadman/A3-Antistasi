@@ -31,7 +31,7 @@ if (hayIFA) then {_tiempolim = _tiempolim * 2};
 _fechalim = [date select 0, date select 1, date select 2, date select 3, (date select 4) + _tiempolim];
 _fechalimnum = dateToNumber _fechalim;
 _lado = if (lados getVariable [_marcador,sideUnknown] == malos) then {malos} else {muyMalos};
-_texto = if (_lado == malos) then {format ["A group of smugglers have been arrested in %1 and they are about to be sent to prison. Go there and free them in order to make them join our cause. Do this before %2:%3",_nombredest,numberToDate [2035,_fechalimnum] select 3,numberToDate [2035,_fechalimnum] select 4]} else {format ["A group of %3 supportes are hidden in %1 awaiting for evacuation. We have to find them before %2 does it. If not, there will be a certain death for them. Bring them back to HQ",_nombredest,nameMuyMalos,nameBuenos]};
+_texto = if (_lado == malos) then {format ["A group of smugglers have been arrested in %1 and they are about to be sent to prison. Go there and free them in order to make them join our cause. Do this before %2:%3",_nombredest,numberToDate [2035,_fechalimnum] select 3,numberToDate [2035,_fechalimnum] select 4]} else {format ["A group of %3 supporters are hidden in %1 awaiting for evacuation. We have to find them before %2 does it. If not, there will be a certain death for them. Bring them back to HQ",_nombredest,nameMuyMalos,nameBuenos]};
 _posTsk = if (_lado == malos) then {(position _casa) getPos [random 100, random 360]} else {position _casa};
 
 [[buenos,civilian],"RES",[_texto,"Refugees Evac",_nombredest],_posTsk,false,0,true,"run",true] call BIS_fnc_taskCreate;
@@ -105,12 +105,12 @@ else
 		_dirVeh = getDir _road;
 		};
 	_posVeh = [_posroad, 3, _dirveh + 90] call BIS_Fnc_relPos;
-	_veh = vehPoliceCar createVehicle _posVeh;
+	_veh = (selectRandom vehPoliceCar) createVehicle _posVeh;
 	_veh allowDamage false;
 	_veh setDir _dirVeh;
 	sleep 15;
 	_veh allowDamage true;
-	_nul = [_veh] call A3A_fnc_AIVEHinit;
+	_nul = [_veh, _lado] call A3A_fnc_AIVEHinit;
 	_mrk = createMarkerLocal [format ["%1patrolarea", floor random 100], getPos _casa];
 	_mrk setMarkerShapeLocal "RECTANGLE";
 	_mrk setMarkerSizeLocal [50,50];
@@ -136,6 +136,7 @@ else
 	_nul = [leader _grupo, _mrk, "SAFE","SPAWNED", "NOVEH2","RANDOM", "NOFOLLOW"] execVM "scripts\UPSMON.sqf";
 	{[_x,""] call A3A_fnc_NATOinit} forEach units _grupo;
 	_grupo1 = [_casa buildingExit 0, malos, gruposNATOGen] call A3A_fnc_spawnGroup;
+	{[_x,""] call A3A_fnc_NATOinit} forEach units _grupo1;
 	};
 
 _bonus = if (_dificil) then {2} else {1};

@@ -1,6 +1,8 @@
 if (!isServer and hasInterface) exitWith{};
 
-private ["_marcador","_vehiculos","_grupos","_soldados","_civs","_posicion","_pos","_tipogrupo","_tipociv","_size","_mrk","_ang","_cuenta","_grupo","_veh","_civ","_frontera","_bandera","_perro","_garrison","_lado","_cfg","_esFIA","_roads","_dist","_road","_roadscon","_roadcon","_dirveh","_bunker","_tipoVeh","_tipoUnit","_unit","_tipoGrupo","_stance"];
+private ["_marcador","_vehiculos","_grupos","_soldados","_civs","_posicion","_pos","_tipogrupo","_tipociv","_size","_mrk",
+"_ang","_cuenta","_grupo","_veh","_civ","_frontera","_flag","_perro","_garrison","_lado","_cfg","_esFIA","_roads","_dist",
+"_road","_roadscon","_roadcon","_dirveh","_bunker","_tipoVeh","_tipoUnit","_unit","_tipoGrupo","_stance"];
 
 _marcador = _this select 0;
 
@@ -53,10 +55,10 @@ if ((spawner getVariable _marcador != 2) and _frontera) then
 			_vehiculos pushBack _veh;
 			_veh setPos _pos;
 			_veh setDir _dirVeh + 180;
-			_tipoUnit = if (_lado==malos) then {staticCrewmalos} else {staticCrewMuyMalos};
+			_tipoUnit = if (_lado==malos) then {selectRandom staticCrewmalos} else {selectRandom staticCrewMuyMalos};
 			_unit = _grupo createUnit [_tipoUnit, _posicion, [], 0, "NONE"];
 			[_unit,_marcador] call A3A_fnc_NATOinit;
-			[_veh] call A3A_fnc_AIVEHinit;
+			[_veh, _lado] call A3A_fnc_AIVEHinit;
 			_unit moveInGunner _veh;
 			_soldados pushBack _unit;
 			}
@@ -68,7 +70,7 @@ if ((spawner getVariable _marcador != 2) and _frontera) then
 				{
 				_veh = vehFIAArmedCar createVehicle getPos _road;
 				_veh setDir _dirveh + 90;
-				_nul = [_veh] call A3A_fnc_AIVEHinit;
+				_nul = [_veh, _lado] call A3A_fnc_AIVEHinit;
 				_vehiculos pushBack _veh;
 				sleep 1;
 				_unit = _grupo createUnit [FIARifleman, _posicion, [], 0, "NONE"];
@@ -133,11 +135,8 @@ if (_patrol) then
 		};
 	};
 
-_tipoVeh = if (_lado == malos) then {NATOFlag} else {CSATFlag};
-_bandera = createVehicle [_tipoVeh, _posicion, [],0, "CAN_COLLIDE"];
-_bandera allowDamage false;
-[_bandera,"take"] remoteExec ["A3A_fnc_flagaction",[buenos,civilian],_bandera];
-_vehiculos pushBack _bandera;
+_flag = [_lado,_posicion] call A3A_fnc_createFlag;
+_vehiculos pushBack _flag;
 
 if (not(_marcador in destroyedCities)) then
 	{
@@ -186,7 +185,7 @@ if (count _pos > 0) then
 	_veh = createVehicle [selectRandom _tipoVeh, _pos, [], 0, "NONE"];
 	_veh setDir random 360;
 	_vehiculos pushBack _veh;
-	_nul = [_veh] call A3A_fnc_AIVEHinit;
+	_nul = [_veh, _lado] call A3A_fnc_AIVEHinit;
 	sleep 1;
 	};
 

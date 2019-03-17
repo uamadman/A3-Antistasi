@@ -78,7 +78,7 @@ _camion = vehSDKTruck createVehicle _pos;
 
 _grupo addVehicle _camion;
 {[_x] spawn A3A_fnc_FIAinit; [_x] orderGetIn true} forEach units _grupo;
-_nul = [_camion] call A3A_fnc_AIVEHinit;
+_nul = [_camion, buenos] call A3A_fnc_AIVEHinit;
 leader _grupo setBehaviour "SAFE";
 theBoss hcSetGroup [_grupo];
 _camion allowCrewInImmobile true;

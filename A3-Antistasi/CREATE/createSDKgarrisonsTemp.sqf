@@ -21,7 +21,7 @@ if (_tipo isEqualType "") then
 		_nul=[_veh] execVM "scripts\UPSMON\MON_artillery_add.sqf";
 		_unit assignAsGunner _veh;
 		_unit moveInGunner _veh;
-		[_veh] call A3A_fnc_AIVEHinit;
+		[_veh, side _unit] call A3A_fnc_AIVEHinit;
 		};
 	if (_grupos isEqualTo []) then
 		{

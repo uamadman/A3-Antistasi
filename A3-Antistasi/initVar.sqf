@@ -5,7 +5,7 @@
 //Not commented lines cannot be changed.
 //Don't touch them.
 
-antistasiVersion = "v 1.4.0.2";
+antistasiVersion = "v 1.4.0.4";
 
 
 debug = false;//debug variable, not useful for everything..
@@ -431,8 +431,8 @@ smallCAmrk = [];
 smallCApos = [];
 bigAttackInProgress = false;
 chopForest = false;
-distanceForAirAttack = 10000;
-distanceForLandAttack = if (hayIFA) then {5000} else {3000};
+distanceForAirAttack = 1000;
+distanceForLandAttack = if (hayIFA) then {10000} else {8000};
 
 if (worldName == "Tanoa") then
 	{
@@ -521,6 +521,7 @@ server setVariable [vehSDKTruck,300,true];//300
 {server setVariable [_x,700,true]} forEach [vehSDKLightArmed,vehSDKAT];
 {server setVariable [_x,400,true]} forEach [SDKMGStatic,vehSDKBoat,vehSDKRepair];//400
 {server setVariable [_x,800,true]} forEach [SDKMortar,staticATBuenos,staticAABuenos];//800
+{server setVariable [_x,800,true]} forEach [vehPlanes];//2500
 server setVariable ["hr",8,true];//initial HR value
 server setVariable ["resourcesFIA",1000,true];//Initial FIA money pool value
 skillFIA = 0;//Initial skill level for FIA soldiers

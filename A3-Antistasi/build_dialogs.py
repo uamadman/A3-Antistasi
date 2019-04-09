@@ -1,15 +1,13 @@
-def store_class_base(class_name, idd=-1, movingenable=False, extra=None):
+def store_class_base(class_name, idd=-1, movingenable='false', extra=None):
     """
-    :param class_name:
-    :param idd:
-    :param movingenable:
-    :param extra:
-    :return:
+    :param class_name: string: The name of the menu used to hold the controls/buttons
+    :param idd: int: An identification. (Not sure what this does, -1 in all cases for now)
+    :param movingenable: string: must be a string of either true or false
+    (untested as all use cases are false, assuming it might let you drag the menu around)
+    :param extra: dictionary: Additional parameters can be put here in dictionary form
+    IE: {var: val, var2: val2, etc:etc}
+    :return: dictionary: describing the first class in a menu
     """
-    if movingenable:
-        movingenable = 'true'
-    else:
-        movingenable = 'false'
     template = {
         'class_name': class_name,
         'idd': idd,
@@ -23,13 +21,14 @@ def store_class_base(class_name, idd=-1, movingenable=False, extra=None):
 
 def store_dialog(class_name, text='', tooltip='', action=r'', position='button', extra=None):
     """
-    :param class_name:
-    :param text:
-    :param tooltip:
-    :param action:
-    :param position:
-    :param extra:
-    :return:
+    :param class_name: string: The menu features class name
+    :param text: string: This is the text field IE: the button text
+    :param tooltip: string: This is the popup message when hovering over a button
+    :param action: string: this is the SQF function that gets executed on button press
+    :param position: string: valid options are : button, background, background_frame, back_button
+    :param extra: dictionary: Additional parameters can be put here in dictionary form
+    IE: {var: val, var2: val2, etc:etc}
+    :return: dictionary: describing the feature of a class within in a menu
     """
     template = {
         'class': class_name,
@@ -45,13 +44,13 @@ def store_dialog(class_name, text='', tooltip='', action=r'', position='button',
     return template
 
 
-def get_box(x, y, w, h):
+def gen_position_attributes(x, y, w, h):
     """
-    :param x:
-    :param y:
-    :param w:
-    :param h:
-    :return:
+    :param x: int: the X axis of an object
+    :param y :int: the Y axis of an object
+    :param w :int: the width of an object
+    :param h :int: the height of an object
+    :return: dictionary: a properly formatted dictionary containing the formula for properly placing menu features
     """
     standard_frame = [
         'x = {0} * safezoneW + safezoneX;'.format(round(x, 3)),
@@ -63,11 +62,25 @@ def get_box(x, y, w, h):
 
 
 def get_position(position, class_controls, button=0):
+    """
+    # This function calculates where and how a menu feature should be placed.
+    :param position: string: valid options are : button, background, background_frame, back_button
+    :param class_controls: dictionary: This is all the necessary information to
+                           place a menu feature look at store_dialog
+    :param button: This indicates the position if the incoming class is a button.
+    :return: dictionary: Once values are established gen_position_attributes
+                         is properly filled out and its dictionary is returned.
+    """
+    # The default reference values for menu and button placement
     bkgd_x = .25
     bkgd_y = .22
     bkgd_w = .46
     bkgd_h = .150
+
+    # Take note of how many buttons there are.
     control_count = len(class_controls)
+
+    # calculate and generate the background and background frame attributes
     if position == 'background' or position == 'background_frame':
         for control in class_controls:
             control_position = control.get('position')
@@ -82,32 +95,41 @@ def get_position(position, class_controls, button=0):
         if control_count % 2 != 0:
             control_count += 1
         if position == 'background':
-            return get_box(bkgd_x, bkgd_y, bkgd_w, (cc * .1) + bkgd_h)
-
+            return gen_position_attributes(bkgd_x, bkgd_y, bkgd_w, (cc * .1) + bkgd_h)
         elif position == 'background_frame':
-            return get_box(bkgd_x + .02, bkgd_y + .02, bkgd_w - .04, (cc * .1) + bkgd_h - .04)
+            return gen_position_attributes(bkgd_x + .02, bkgd_y + .02, bkgd_w - .04, (cc * .1) + bkgd_h - .04)
+
+    # generate the default back button attributes
     elif position == 'back_button':
-        return get_box(0.61, 0.25, 0.06, 0.05)
+        return gen_position_attributes(0.61, 0.25, 0.06, 0.05)
+
+    # calculate and generate the button attributes
     elif position == 'button':
         if button % 2 == 0:
             button_column = .490
         else:
             button_column = .290
         button_row = (button - 1) // 2
-        return get_box(button_column, .320 + (button_row * .1), 0.175015, 0.0560125)
-    else:
-        return list()
+        return gen_position_attributes(button_column, .320 + (button_row * .1), 0.175015, 0.0560125)
+
+    # if its doesn't match any of the above positions tell them about it
+    # but return an empty array and don't crash the script.
+    print(str(position) + 'is not a valid position')
+    return list()
 
 
 def build_dialog_file(path, dialog_map, custom_block):
     """
-    :param path:
-    :param dialog_map:
-    :param custom_block:
-    :return:
+    :param path: path string: Define the dialog.hpp file location
+    :param dialog_map: dictionary: this is the built in dialog_map structure with all the key components to auto magically
+                       generate the dialog.hpp file
+    :param custom_block: string: This string is blanket pasted to the end of the dialog.hpp file
+    :return: string: an indication of Success!
     """
     with open(path, 'w') as o:
         for menu in dialog_map:
+
+            # Build the base menu class
             menu_att = menu.get('class origin')
             o.write('class {0} {1}\n'.format(menu_att.get('class_name'), '{'))
             o.write('\tidd = {0};\n'.format(menu_att.get('idd')))
@@ -115,6 +137,8 @@ def build_dialog_file(path, dialog_map, custom_block):
             o.write('\tclass controls {\n')
             idc = 100
             button = 0
+
+            # Build each of the menu features
             for sub_att in menu.get('class controls'):
                 o.write('\t\tclass {0}\n'.format(sub_att.get('class')))
                 o.write('\t\t{\n')
@@ -137,14 +161,16 @@ def build_dialog_file(path, dialog_map, custom_block):
                 if sub_att.get('extra'):
                     for row in sub_att.get('extra'):
                         o.write('\t\t\t{0}\n'.format(row))
-
                 o.write('\t\t};\n')
+
+            # Write the closing encapsulations for each menu set
             o.write('\t};\n')
             o.write('};\n')
+
+        # write the custom block that is too unqiue to be worth automating
         o.write(custom_block)
+    return 'Success'
 
-
-# TODO replace € with Credits
 
 dialog_map = [
     # Startup Menu
@@ -215,8 +241,9 @@ dialog_map = [
                       tooltip="Check Faction garage",
                       action=r'"closeDialog 0;nul = [false] spawn A3A_fnc_garage"'),
      ],
-
      },
+
+    # Build Menu
     {'class origin': store_class_base('build_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -242,9 +269,10 @@ dialog_map = [
                       text="Remove Garrison",
                       tooltip="Remove whole garrisons or posts",
                       action=r'"closeDialog 0; [""rem""] spawn A3A_fnc_garrisonDialog"'),
-
      ]
      },
+
+    # Garrison Recruitment Menu
     {'class origin': store_class_base('garrison_recruit'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -285,6 +313,8 @@ dialog_map = [
                       action=r'"nul = [SDKATman] spawn A3A_fnc_garrisonAdd"'),
      ]
      },
+
+    # Mine Building Menu
     {'class origin': store_class_base('minebuild_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -306,6 +336,8 @@ dialog_map = [
                       action=r'"closeDialog 0; [""ATMine""] spawn A3A_fnc_mineDialog"'),
      ]
      },
+
+    # Personal Squad Recruitment Menu
     {'class origin': store_class_base('unit_recruit'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -344,6 +376,8 @@ dialog_map = [
                       action=r'"nul = [SDKATman] spawn A3A_fnc_reinfPlayer"'),
      ]
      },
+
+    # The base vehicle purchase menu, choose your flavor, civilian or military!
     {'class origin': store_class_base('vehicle_option'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -360,6 +394,8 @@ dialog_map = [
                       action=r'"closeDialog 0; nul=[] execVM ""Dialogs\buy_vehicle.sqf"";"'),
      ]
      },
+
+    # Buy Military Vehicles Menu
     {'class origin': store_class_base('buy_vehicle'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -399,6 +435,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = [staticAABuenos] spawn A3A_fnc_addFIAveh;"'),
      ]
      },
+
+    # Buy civilian vehicles menu
     {'class origin': store_class_base('civ_vehicle'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -423,6 +461,8 @@ dialog_map = [
                       action=r'"closeDialog 0;[civBoat] spawn A3A_fnc_addFIAveh;"'),
      ]
      },
+
+    # Game options
     {'class origin': store_class_base('game_options'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -455,6 +495,8 @@ dialog_map = [
                       action=r'"closeDialog 0;if (player == theBoss) then {[""statSave\saveLoop.sqf"",""BIS_fnc_execVM""] call BIS_fnc_MP} else {_nul = [] execVM ""statSave\saveLoop.sqf""; hintC ""Personal Stats Saved""};"'),
      ]
      },
+
+    # AI population limits menu
     {'class origin': store_class_base('fps_limiter'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -472,6 +514,8 @@ dialog_map = [
 
      ]
      },
+
+    # AI spawn distance limits menu
     {'class origin': store_class_base('spawn_config'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -489,6 +533,8 @@ dialog_map = [
 
      ]
      },
+
+    # Civilian population spawn limits
     {'class origin': store_class_base('civ_config'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -506,6 +552,8 @@ dialog_map = [
 
      ]
      },
+
+    # Mission request menu
     {'class origin': store_class_base('mission_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -541,6 +589,8 @@ dialog_map = [
                       action=r'"closeDialog 0;"'),
      ]
      },
+
+    # The Y  Menu!
     {'class origin': store_class_base('radio_comm'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -588,6 +638,8 @@ dialog_map = [
                       action=r'"closeDialog 0; nul = createDialog ""commander_comm"";"'),
      ]
      },
+
+    # Vehicle management menu
     {'class origin': store_class_base('vehicle_manager'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -616,6 +668,8 @@ dialog_map = [
                       action=r'"closeDialog 0;[] call A3A_fnc_unlockVehicle"'),
      ]
      },
+
+    # Squad vehicle confirmation menu
     {'class origin': store_class_base('veh_query'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -632,6 +686,8 @@ dialog_map = [
                       action=r'"closeDialog 0; vehQuery = nil"'),
      ]
      },
+
+    # Squad Management Menu
     {'class origin': store_class_base('squad_manager'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -660,6 +716,8 @@ dialog_map = [
                       action=r'"closeDialog 0; [] spawn A3A_fnc_staticAutoT"'),
      ]
      },
+
+    # AI management menu
     {'class origin': store_class_base('AI_management'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -708,6 +766,8 @@ dialog_map = [
                       action=r'"[""mount""] call A3A_fnc_vehStats"'),
      ]
      },
+
+    # Commander Options Menu
     {'class origin': store_class_base('commander_comm'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -756,6 +816,8 @@ dialog_map = [
                       action=r'"if (player == theBoss) then {closeDialog 0; nul = [] call A3A_fnc_sellVehicle} else {hint ""Only the Commander can sell vehicles""};"'),
      ]
      },
+
+    # Air Strike Request Menu
     {'class origin': store_class_base('carpet_bombing'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -784,6 +846,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = [] call A3A_fnc_addBombRun"'),
      ]
      },
+
+    # Dismiss/Garrison menu(Deprecated/NOT IN USE?)
     {'class origin': store_class_base('dismiss_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -804,6 +868,8 @@ dialog_map = [
 
      ]
      },
+
+    # Construction Menu
     {'class origin': store_class_base('construction_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -832,6 +898,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = createDialog ""bunker_menu"""'),
      ]
      },
+
+    # Construction sub bunker menu
     {'class origin': store_class_base('bunker_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -847,6 +915,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = [""CB""] spawn A3A_fnc_construir;"'),
      ]
      },
+
+    # Commander Recruit Squad Menu
     {'class origin': store_class_base('squad_recruit'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -887,6 +957,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = [SDKMortar] spawn A3A_fnc_addFIAsquadHC"'),
      ]
      },
+
+    # Players and Money Menu
     {'class origin': store_class_base('player_money'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -914,6 +986,8 @@ dialog_map = [
                       action=r'"[] call A3A_fnc_donateMoney;"'),
      ]
      },
+
+    # Garage/Sell Submenu (only able to activate when using the lower level garage menu's back button????)
     {'class origin': store_class_base('garage_sell'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -931,6 +1005,8 @@ dialog_map = [
 
      ]
      },
+
+    # Garage selection menu
     {'class origin': store_class_base('garage_check'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -948,6 +1024,8 @@ dialog_map = [
 
      ]
      },
+
+    # The Carpet Bombing Strike Menu!
     {'class origin': store_class_base('tu_madre'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -977,9 +1055,10 @@ dialog_map = [
                       text="NAPALM Bomb",
                       tooltip="Cost: 10 points",
                       action=r'"closeDialog 0;[""NAPALM""] spawn A3A_fnc_NATObomb;"'),
-
      ]
      },
+
+    # Artillery sub menu for mortar types
     {'class origin': store_class_base('mortar_type'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -993,9 +1072,10 @@ dialog_map = [
          store_dialog('HQ_button_Gstatic: RscButton',
                       text="Smoke",
                       action=r'"closeDialog 0; tipoMuni = SDKMortarSmokeMag;"'),
-
      ]
      },
+
+    # Artillery sub menu for mortar round quantities
     {'class origin': store_class_base('rounds_number'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1036,6 +1116,8 @@ dialog_map = [
                       action=r'"closeDialog 0;rondas = 8"'),
      ]
      },
+
+    # Artillery sub menu for mortar strike type
     {'class origin': store_class_base('strike_type'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1051,6 +1133,8 @@ dialog_map = [
                       action=r'"closeDialog 0; tipoArty = ""BARRAGE"";"'),
      ]
      },
+
+    # A nato vehicle purchase screen
     {'class origin': store_class_base('NATO_player'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1065,6 +1149,8 @@ dialog_map = [
                       action=r'"closeDialog 0;[] spawn A3A_fnc_NATOFT"'),
      ]
      },
+
+    # Artillery sub menu for large shell artillery strikes
     {'class origin': store_class_base('mbt_type'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1084,6 +1170,8 @@ dialog_map = [
                       action=r'"closeDialog 0; tipoMuni = ""6Rnd_155mm_Mo_smoke"";"'),
      ]
      },
+
+    # Squad recruitment type sub menu
     {'class origin': store_class_base('squad_options'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1108,6 +1196,8 @@ dialog_map = [
                       action=r'"closeDialog 0;nul = [gruposSDKSquadSupp,""Mortar""] spawn A3A_fnc_addFIAsquadHC;"'),
      ]
      },
+
+    # Game mode difficulty submenu (Deprecated? I've never seen it)
     {'class origin': store_class_base('diff_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1125,6 +1215,8 @@ dialog_map = [
                       action=r'"closeDialog 0; skillMult = 2"'),
      ]
      },
+
+    # Game mode difficulty menu (Deprecated? I've never seen it)
     {'class origin': store_class_base('gameMode_menu'),
      'class controls': [
          store_dialog('HQ_BOX: BOX', position='background'),
@@ -1146,16 +1238,10 @@ dialog_map = [
                       action=r'"closeDialog 0;gameMode = 4"'),
      ]
      },
-    # {'class origin': store_class_base(''),
-    #  'class controls': [
-    #      store_dialog('HQ_BOX: BOX', position='background'),
-    #      store_dialog('HQ_frame: RscFrame', text='', position='background_frame'),
-    #      store_dialog('HQ_button_back: RscButton', text='Back', position='back_button', action=r'"closeDialog 0"'),
-    #  ]
-    #  },
 
 ]
 
+# Menu  Example
 # {'class origin': store_class_base(''),
 # 'class controls': [
 #     store_dialog('HQ_BOX: BOX', position='background'),
@@ -1164,9 +1250,20 @@ dialog_map = [
 #     store_dialog('', text='', position='button',
 #                  tooltip='',
 #                  action=r''),
+#         # Sub menu Example
+#         {'class origin': store_class_base(''),
+#          'class controls': [
+#              store_dialog('HQ_BOX: BOX', position='background'),
+#              store_dialog('HQ_frame: RscFrame', text='', position='background_frame'),
+#              store_dialog('HQ_button_back: RscButton', text='Back', position='back_button', action=r'"closeDialog 0"'),
+#          ]
+#          },
 # ]
 # },
 
+
+# This is the custom block for things not handled above.
+# The code here is only appended to the bottom of the dialog.hpp file.
 custom_block = """
 class RscTitles {
 	class Default {
@@ -1218,4 +1315,5 @@ class RscTitles {
 
 """
 
-build_dialog_file(r'C:\Users\uamadman\Documents\A3-Antistasi\A3-Antistasi\dialogs.hpp', dialog_map, custom_block)
+if __name__ == '__main__':
+    build_dialog_file(r'C:\Users\uamadman\Documents\A3-Antistasi\A3-Antistasi\dialogs.hpp', dialog_map, custom_block)

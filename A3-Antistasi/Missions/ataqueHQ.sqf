@@ -22,47 +22,45 @@ misiones pushBack ["DEF_HQ","CREATED"]; publicVariable "misiones";
 _tiposVeh = if (_lado == malos) then {vehNATOAttackHelis} else {vehCSATAttackHelis};
 _tiposVeh = _tiposVeh select {[_x] call A3A_fnc_vehAvailable};
 
-if (count _tiposVeh > 0) then
-	{
+if (count _tiposVeh > 0) then {
 	_tipoVeh = selectRandom _tiposVeh;
 	//_pos = [_posicion, distanciaSPWN * 3, random 360] call BIS_Fnc_relPos;
-	_vehicle=[_posOrigen, 0, _tipoVeh, _lado] call bis_fnc_spawnvehicle;
-	_heli = _vehicle select 0;
-	_heliCrew = _vehicle select 1;
+	_vehicle = [_posOrigen, 0, _tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 	_grupoheli = _vehicle select 2;
-	_pilotos = _pilotos + _heliCrew;
+	_pilotos = _pilotos + (_vehicle select 1);
 	_grupos pushBack _grupoheli;
-	_vehiculos pushBack _heli;
-	{[_x] call A3A_fnc_NATOinit} forEach _heliCrew;
-	[_heli] call A3A_fnc_AIVEHinit;
+	_vehiculos pushBack (_vehicle select 0);
 	_wp1 = _grupoheli addWaypoint [_posicion, 0];
 	_wp1 setWaypointType "SAD";
 	//[_heli,"Air Attack"] spawn A3A_fnc_inmuneConvoy;
 	sleep 30;
-	};
+};
 _tiposVeh = if (_lado == malos) then {vehNATOTransportHelis} else {vehCSATTransportHelis};
 _tipoGrupo = if (_lado == malos) then {NATOSpecOp} else {CSATSpecOp};
 
-for "_i" from 0 to (round random 2) do
-	{
+for "_i" from 0 to (round random 2) do {
 	_tipoVeh = selectRandom _tiposVeh;
 	//_pos = [_posicion, distanciaSPWN * 3, random 360] call BIS_Fnc_relPos;
-	_vehicle=[_posOrigen, 0, _tipoVeh, _lado] call bis_fnc_spawnvehicle;
+	_vehicle = [_posOrigen, 0, _tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 	_heli = _vehicle select 0;
-	_heliCrew = _vehicle select 1;
 	_grupoheli = _vehicle select 2;
-	_pilotos = _pilotos + _heliCrew;
+	_pilotos = _pilotos + (_vehicle select 1);
 	_grupos pushBack _grupoheli;
 	_vehiculos pushBack _heli;
 
 	{_x setBehaviour "CARELESS";} forEach units _grupoheli;
 	_grupo = [_posOrigen, _lado, _tipoGrupo] call A3A_fnc_spawnGroup;
-	{_x assignAsCargo _heli; _x moveInCargo _heli; _soldados pushBack _x; [_x] call A3A_fnc_NATOinit} forEach units _grupo;
+	{
+	    _x assignAsCargo _heli;
+	    _x moveInCargo _heli;
+	    _soldados pushBack _x;
+	    [_x] call A3A_fnc_NATOinit;
+	} forEach units _grupo;
 	_grupos pushBack _grupo;
 	//[_heli,"Air Transport"] spawn A3A_fnc_inmuneConvoy;
-	[_heli,_grupo,_posicion,_posOrigen,_grupoHeli] spawn A3A_fnc_fastrope;
+	[_heli, _grupo, _posicion, _posOrigen, _grupoHeli] spawn A3A_fnc_fastrope;
 	sleep 10;
-	};
+};
 
 waitUntil {sleep 1;({[_x] call A3A_fnc_canFight} count _soldados < {!([_x] call A3A_fnc_canFight)} count _soldados) or (_posicion distance getMarkerPos respawnBuenos > 999) or (!alive petros)};
 

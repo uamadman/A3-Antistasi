@@ -10,14 +10,9 @@ if (count _this > 1) then
 	_unit setVariable ["marcador",_marcador,true];
 	if ((spawner getVariable _marcador != 0) and (vehicle _unit != _unit)) then
 		{
-		if (!isMultiplayer) then
-			{
-			_unit enableSimulation false
-			}
-		else
-			{
-			[_unit,false] remoteExec ["enableSimulationGlobal",2]
-			}
+
+		[_unit,false] remoteExec ["enableSimulationGlobal",2]
+
 		};
 	};
 [_unit] call A3A_fnc_initRevive;

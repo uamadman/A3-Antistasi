@@ -17,7 +17,7 @@ _pos = position _road findEmptyPosition [1,30,"B_G_Van_01_transport_F"];
 
 _camion = vehSDKRepair createVehicle _pos;
 
-[_camion] call A3A_fnc_AIVEHinit;
+[_camion, buenos] call A3A_fnc_AIVEHinit;
 [_unit] spawn A3A_fnc_FIAinit;
 clearMagazineCargo unitBackpack _unit;
 _unit addItemToBackpack "MineDetector";

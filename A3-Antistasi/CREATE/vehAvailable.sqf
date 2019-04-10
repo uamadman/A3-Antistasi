@@ -1,7 +1,8 @@
-private ["_tipo","_cant"];
-_tipo = _this select 0;
+params ["_tipo"];
+private ["_cant"];
 if (_tipo == "") exitWith {false};
-if ((_tipo in [vehCSATPatrolHeli,vehNATOPatrolHeli,vehCSATRBoat,vehNATORBoat]) or (_tipo in vehCSATTrucks) or (_tipo in vehNATOTrucks)) exitWith {true};
+
+if (_tipo in ([vehCSATPatrolHeli,vehNATOPatrolHeli,vehCSATRBoat,vehNATORBoat] + vehCSATTrucks + vehNATOTrucks)) exitWith {true};
 _cant = timer getVariable _tipo;
 if (isNil "_cant") exitWith {true};
 if (_cant <= 1) exitWith {false};

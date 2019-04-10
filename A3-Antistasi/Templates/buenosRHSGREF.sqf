@@ -91,6 +91,10 @@ vehPoliceCar = "B_GEN_OFFROAD_01_gen_F";
 policeOfficer = "B_GEN_Commander_F";
 policeGrunt = "B_GEN_Soldier_F";
 gruposNATOGen = [policeOfficer,policeGrunt];
+policeLowTierGuns = ["SMG_05_F","SMG_02_F","hgun_PDW2000_F"];
+policeMediumTierGuns = ["arifle_AKM_F","arifle_AKS_F","SMG_03C_black","SMG_03C_TR_black","arifle_TRG20_F","arifle_Mk20C_plain_F"];
+policeHighTierGuns = ["arifle_AK12_F","SMG_03_TR_black","SMG_03_black","arifle_TRG21_F","arifle_Mk20_plain_F"];
+policeTopTierGuns = ["arifle_AK12_GL_F"];
 nameBuenos = "ChDKZ";
 
 factionGEN = "BLU_GEN_F";

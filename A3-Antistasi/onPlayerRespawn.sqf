@@ -99,40 +99,32 @@ if (side group player == buenos) then
 		}
 		];
 
-	player addEventHandler ["InventoryOpened",
-		{
+	player addEventHandler ["InventoryOpened",{
 		private ["_jugador","_contenedor","_tipo"];
 		_control = false;
 		_jugador = _this select 0;
-		if (captive _jugador) then
-			{
+		if (captive _jugador) then {
 			_contenedor = _this select 1;
 			_tipo = typeOf _contenedor;
-			if (((_contenedor isKindOf "Man") and (!alive _contenedor)) or (_tipo == NATOAmmoBox) or (_tipo == CSATAmmoBox)) then
-				{
-				if ({if (((side _x== muyMalos) or (side _x== malos)) and (_x knowsAbout _jugador > 1.4)) exitWith {1}} count allUnits > 0) then
-					{
+			if (((_contenedor isKindOf "Man") and (!alive _contenedor)) or (_tipo == NATOAmmoBox) or (_tipo == CSATAmmoBox)) then {
+				if ({if (((side _x== muyMalos) or (side _x== malos)) and (_x knowsAbout _jugador > 1.4)) exitWith {1}} count allUnits > 0) then {
 					[_jugador,false] remoteExec ["setCaptive",0,_jugador];
 					_jugador setCaptive false;
-					}
-				else
-					{
+				} else {
 					_ciudad = [ciudades,_jugador] call BIS_fnc_nearestPosition;
 					_size = [_ciudad] call A3A_fnc_sizeMarker;
 					_datos = server getVariable _ciudad;
-					if (random 100 < _datos select 2) then
-						{
-						if (_jugador distance getMarkerPos _ciudad < _size * 1.5) then
-							{
+					if (random 100 < _datos select 2) then {
+						if (_jugador distance getMarkerPos _ciudad < _size * 1.5) then {
 							[_jugador,false] remoteExec ["setCaptive",0,_jugador];
 							_jugador setCaptive false;
-							};
 						};
 					};
 				};
 			};
+		};
 		_control
-		}];
+	}];
 	/*
 	player addEventHandler ["InventoryClosed",
 		{
@@ -215,7 +207,7 @@ if (side group player == buenos) then
 				{
 				staticsToSave pushBack _veh;
 				publicVariable "staticsToSave";
-				[_veh] call A3A_fnc_AIVEHinit;
+				[_veh, side player] call A3A_fnc_AIVEHinit;
 				};
 			}
 		else
@@ -229,8 +221,8 @@ if (side group player == buenos) then
 			_bag2 = _this select 2;
 			//_bag1 = objectParent (_this select 1);
 			//_bag2 = objectParent (_this select 2);
-			[_bag1] call A3A_fnc_AIVEHinit;
-			[_bag2] call A3A_fnc_AIVEHinit;
+			[_bag1, side player] call A3A_fnc_AIVEHinit;
+			[_bag2, side player] call A3A_fnc_AIVEHinit;
 			}
 		];
 	[true] execVM "reinitY.sqf";

@@ -9,11 +9,11 @@ clearBackpackCargoGlobal caja;
 
 
 for "_i" from 0 to (1+ round random 4) do
-	{_cosa = if (random 2 < 1) then {selectRandom (armasNATO + antitanqueAAF)} else {selectRandom (armasCSAT + antitanqueAAF)};
+	{_cosa = if (random 2 < 1) then {selectRandom (armasNATO + guidedLaunchersNATO)} else {selectRandom (armasCSAT + guidedLaunchersCSAT)};
 	_num = 1+ (floor random 4);
 	caja addWeaponCargoGlobal [_cosa, _num];
 	_magazines = getArray (configFile / "CfgWeapons" / _cosa / "magazines");
-	caja addMagazineCargoGlobal [_magazines select 0, _num * 3];
+	caja addMagazineCargoGlobal [selectRandom _magazines, _num * 3];
 	};
 
 for "_i" from 0 to (1 + round random 5) do

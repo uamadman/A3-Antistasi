@@ -1,7 +1,7 @@
 // usage: Activate via radio trigger, on act: [] execVM "airstrike.sqf";
 if (!isServer and hasInterface) exitWith{};
 
-private ["_marcador","_posicion","_ang","_angorig","_pos1","_origpos","_pos2","_finpos","_plane","_wp1","_wp2","_wp3","_lado","_esMarcador","_tipoAvion","_exit","_timeOut","_size","_buildings","_amigos","_enemigos","_mediaX","_mediaY","_pos","_cuenta","_distanteNum","_distante","_planefn","_planeCrew","_grupoPlane","_tipo"];
+private ["_marcador","_posicion","_ang","_angorig","_pos1","_origpos","_pos2","_finpos","_plane","_wp1","_wp2","_wp3","_lado","_esMarcador","_tipoAvion","_exit","_timeOut","_size","_buildings","_amigos","_enemigos","_mediaX","_mediaY","_pos","_cuenta","_distanteNum","_distante","_planefn","_planeCrew","_grupoPlane","_tipo","_planeChoices"];
 
 _marcador = _this select 0;
 _lado = _this select 1;
@@ -14,7 +14,11 @@ if (_marcador isEqualType "") then
 	};
 _tipo = _this select 2;
 
-_tipoAvion = if (_lado == malos) then {vehNATOPlane} else {vehCSATPlane};
+_planeChoices = if (_lado == malos) then {vehNATOPlane} else {vehCSATPlane};
+_planeChoices = _planeChoices select {[_x] call A3A_fnc_vehAvailable};
+if (count _planeChoices == 0) exitWith {};
+_tipoAvion = selectRandom _planeChoices;
+
 
 _ang = random 360;
 _angorig = _ang + 180;
@@ -91,7 +95,7 @@ else
 	};
 
 if (_exit) exitWith {};
-_planefn = [_origpos, _ang, _tipoavion, _lado] call bis_fnc_spawnvehicle;
+_planefn = [_origpos, _ang, _tipoavion, _lado] call A3A_fnc_spawnVehicle;
 _plane = _planefn select 0;
 if (hayIFA) then {_plane setVelocityModelSpace [((velocityModelSpace _plane) select 0) + 0,((velocityModelSpace _plane) select 1) + 150,((velocityModelSpace _plane) select 2) + 50]};
 _planeCrew = _planefn select 1;

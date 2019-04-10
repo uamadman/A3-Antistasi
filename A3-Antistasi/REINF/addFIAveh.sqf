@@ -120,7 +120,7 @@ comprado = nil;
 _veh = createVehicle [_tipoVeh, [0,0,1000], [], 0, "NONE"];
 _veh setDir _dir;
 _veh setPosASL _pos;
-[_veh] call A3A_fnc_AIVEHinit;
+[_veh, buenos] call A3A_fnc_AIVEHinit;
 if (_veh isKindOf "Car") then {_veh setPlateNumber format ["%1",name player]};
 if (!isMultiplayer) then
 	{

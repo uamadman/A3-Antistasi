@@ -105,14 +105,14 @@ while {(_waves > 0)} do
 				{
 				if (_rnd > prestigeNATO) then
 					{
-					_vehPool = _vehPool - [vehNATOTank];
+					_vehPool = _vehPool - vehNATOTank;
 					};
 				}
 			else
 				{
 				if (_rnd > prestigeCSAT) then
 					{
-					_vehPool = _vehPool - [vehCSATTank];
+					_vehPool = _vehPool - vehCSATTank;
 					};
 				};
 			};
@@ -158,12 +158,10 @@ while {(_waves > 0)} do
 					sleep 1;
 					};
 				if (count _pos == 0) then {_pos = getMarkerPos _spawnPoint};
-				_vehicle=[_pos, _dir,_tipoVeh, _lado] call bis_fnc_spawnvehicle;
+				_vehicle = [_pos, _dir, _tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 
 				_veh = _vehicle select 0;
 				_vehCrew = _vehicle select 1;
-				{[_x] call A3A_fnc_NATOinit} forEach _vehCrew;
-				[_veh] call A3A_fnc_AIVEHinit;
 				_grupoVeh = _vehicle select 2;
 				_soldados append _vehCrew;
 				_soldadosTotal append _vehCrew;
@@ -308,16 +306,13 @@ while {(_waves > 0)} do
 					};
 				if ((count _landPos > 0) and _proceder) then
 					{
-					_vehicle=[_pos, random 360,_tipoveh, _lado] call bis_fnc_spawnvehicle;
+					_vehicle=[_pos, random 360,_tipoveh, _lado] call A3A_fnc_spawnVehicle;
 
 					_veh = _vehicle select 0;
-					_vehCrew = _vehicle select 1;
 					_grupoVeh = _vehicle select 2;
-					_pilotos append _vehCrew;
+					_pilotos append (_vehicle select 1);
 					_grupos pushBack _grupoVeh;
 					_vehiculos pushBack _veh;
-					{[_x] call A3A_fnc_NATOinit} forEach units _grupoVeh;
-					[_veh] call A3A_fnc_AIVEHinit;
 					if ((_tipoVeh == vehNATOBoat) or (_tipoVeh == vehCSATBoat)) then
 						{
 						_wp0 = _grupoVeh addWaypoint [_landpos, 0];
@@ -327,7 +322,10 @@ while {(_waves > 0)} do
 					else
 						{
 						_grupo = grpNull;
-						if !(_spawnedSquad) then {_grupo = [_posorigen,_lado, _tipogrupo,true,false] call A3A_fnc_spawnGroup;_spawnedSquad = true} else {_grupo = [_posorigen,_lado, _tipogrupo,false,true] call A3A_fnc_spawnGroup};
+						if !(_spawnedSquad) then {
+						    _grupo = [_posorigen,_lado, _tipogrupo,true,false] call A3A_fnc_spawnGroup;_spawnedSquad = true
+						} else {
+						    _grupo = [_posorigen,_lado, _tipogrupo,false,true] call A3A_fnc_spawnGroup};
 						{
 						_x assignAsCargo _veh;
 						_x moveInCargo _veh;
@@ -406,7 +404,7 @@ while {(_waves > 0)} do
 			_grupouav = group (crew _uav select 0);
 			_grupos pushBack _grupouav;
 			{[_x] call A3A_fnc_NATOinit} forEach units _grupoUav;
-			[_uav] call A3A_fnc_AIVEHinit;
+			[_uav, _lado] call A3A_fnc_AIVEHinit;
 			_uwp0 = _grupouav addWayPoint [_posdestino,0];
 			_uwp0 setWaypointBehaviour "AWARE";
 			_uwp0 setWaypointType "SAD";
@@ -423,11 +421,11 @@ while {(_waves > 0)} do
 			};
 		_vehPool = if (_lado == malos) then
 					{
-					if (_mrkDestino in aeropuertos) then {(vehNATOAir - [vehNATOPlaneAA]) select {[_x] call A3A_fnc_vehAvailable}} else {(vehNatoAir - vehFixedWing) select {[_x] call A3A_fnc_vehAvailable}};
+					if (_mrkDestino in aeropuertos) then {(vehNATOAir - vehNATOPlaneAA) select {[_x] call A3A_fnc_vehAvailable}} else {(vehNatoAir - vehFixedWing) select {[_x] call A3A_fnc_vehAvailable}};
 					}
 				else
 					{
-					if (_mrkDestino in aeropuertos) then {(vehCSATAir - [vehCSATPlaneAA]) select {[_x] call A3A_fnc_vehAvailable}} else {(vehCSATAir - vehFixedWing) select {[_x] call A3A_fnc_vehAvailable}};
+					if (_mrkDestino in aeropuertos) then {(vehCSATAir - vehCSATPlaneAA) select {[_x] call A3A_fnc_vehAvailable}} else {(vehCSATAir - vehFixedWing) select {[_x] call A3A_fnc_vehAvailable}};
 					};
 		if (_esSDK) then
 			{
@@ -436,14 +434,14 @@ while {(_waves > 0)} do
 				{
 				if (_rnd > prestigeNATO) then
 					{
-					_vehPool = _vehPool - [vehNATOPlane];
+					_vehPool = _vehPool - vehNATOPlane;
 					};
 				}
 			else
 				{
 				if (_rnd > prestigeCSAT) then
 					{
-					_vehPool = _vehPool - [vehCSATPlane];
+					_vehPool = _vehPool - vehCSATPlane;
 					};
 				};
 			};
@@ -486,23 +484,20 @@ while {(_waves > 0)} do
 				};
 			if (_proceder) then
 				{
-				_vehicle=[_pos, _ang + 90,_tipoveh, _lado] call bis_fnc_spawnvehicle;
+				_vehicle=[_pos, _ang + 90,_tipoveh, _lado] call A3A_fnc_spawnVehicle;
 				_veh = _vehicle select 0;
-				if (hayIFA) then {_veh setVelocityModelSpace [((velocityModelSpace _veh) select 0) + 0,((velocityModelSpace _veh) select 1) + 150,((velocityModelSpace _veh) select 2) + 50]};
+				if (hayIFA) then {
+				    _veh setVelocityModelSpace [((velocityModelSpace _veh) select 0) + 0,((velocityModelSpace _veh) select 1) + 150,((velocityModelSpace _veh) select 2) + 50]
+				};
 				_vehCrew = _vehicle select 1;
 				_grupoVeh = _vehicle select 2;
 				_pilotos append _vehCrew;
 				_vehiculos pushBack _veh;
-				{[_x] call A3A_fnc_NATOinit} forEach units _grupoVeh;
-				[_veh] call A3A_fnc_AIVEHinit;
-				if (not (_tipoVeh in vehTransportAir)) then
-					{
+				if (not (_tipoVeh in vehTransportAir)) then {
 					(units _grupoVeh) joinSilent _grupoUav;
 					deleteGroup _grupoVeh;
 					//[_veh,"Air Attack"] spawn A3A_fnc_inmuneConvoy;
-					}
-				else
-					{
+				} else {
 					_grupos pushBack _grupoVeh;
 					_tipogrupo = [_tipoVeh,_lado] call A3A_fnc_cargoSeats;
 					_grupo = grpNull;
@@ -579,14 +574,17 @@ while {(_waves > 0)} do
 			_vehPool = _vehPool select {[_x] call A3A_fnc_vehAvailable};
 			};
 		};
-	_plane = if (_lado == malos) then {vehNATOPlane} else {vehCSATPlane};
+	_planeChoices = if (_lado == malos) then {vehNATOPlane} else {vehCSATPlane};
+	_planeChoices = _planeChoices  select {[_x] call A3A_fnc_vehAvailable};
+	if(count _planeChoices > 0) then {_plane = selectRandom _planeChoices};
+
 	if (_lado == malos) then
 		{
 		if (((not(_mrkDestino in puestos)) and (not(_mrkDestino in puertos)) and (_mrkOrigen != "NATO_carrier")) or hayIFA) then
 			{
 			[_mrkOrigen,_mrkDestino,_lado] spawn A3A_fnc_artilleria;
 			diag_log "Antistasi: Arty Spawned";
-			if (([_plane] call A3A_fnc_vehAvailable) and (not(_mrkDestino in ciudades)) and _firstWave) then
+			if ((count _planeChoices > 0) and (not(_mrkDestino in ciudades)) and _firstWave) then
 				{
 				sleep 60;
 				_rnd = if (_mrkDestino in aeropuertos) then {round random 4} else {round random 2};
@@ -622,7 +620,7 @@ while {(_waves > 0)} do
 			{
 			if !(_posOrigenLand isEqualTo []) then {[_posOrigenLand,_mrkDestino,_lado] spawn A3A_fnc_artilleria} else {[_mrkOrigen,_mrkDestino,_lado] spawn A3A_fnc_artilleria};
 			diag_log "Antistasi: Arty Spawned";
-			if (([_plane] call A3A_fnc_vehAvailable) and (_firstWave)) then
+			if ((count _planeChoices > 0) and (_firstWave)) then
 				{
 				sleep 60;
 				_rnd = if (_mrkDestino in aeropuertos) then {if ({lados getVariable [_x,sideUnknown] == muyMalos} count aeropuertos == 1) then {8} else {round random 4}} else {round random 2};
@@ -699,13 +697,13 @@ while {(_waves > 0)} do
 			if !(_posOrigenLand isEqualTo []) then
 				{
 				if ({[_x] call A3A_fnc_vehAvailable} count vehNATOAPC == 0) then {_waves = _waves -1};
-				if !([vehNATOTank] call A3A_fnc_vehAvailable) then {_waves = _waves - 1};
+				if ({[_x] call A3A_fnc_vehAvailable} count vehNATOTank == 0) then {_waves = _waves -1};
 				};
 			if ({[_x] call A3A_fnc_vehAvailable} count vehNATOAttackHelis == 0) then
 				{
 				if (_posOrigenLand isEqualTo []) then {_waves = _waves -2} else {_waves = _waves -1};
 				};
-			if !([vehNATOPlane] call A3A_fnc_vehAvailable) then
+			if ({[_x] call A3A_fnc_vehAvailable} count vehNATOPlane == 0) then
 				{
 				if (_posOrigenLand isEqualTo []) then {_waves = _waves -2} else {_waves = _waves -1};
 				};
@@ -746,13 +744,13 @@ while {(_waves > 0)} do
 			if !(_posOrigenLand isEqualTo []) then
 				{
 				if ({[_x] call A3A_fnc_vehAvailable} count vehCSATAPC == 0) then {_waves = _waves -1};
-				if !([vehCSATTank] call A3A_fnc_vehAvailable) then {_waves = _waves - 1};
+				if ({[_x] call A3A_fnc_vehAvailable} count vehCSATTank == 0) then {_waves = _waves -1};
 				};
 			if ({[_x] call A3A_fnc_vehAvailable} count vehCSATAttackHelis == 0) then
 				{
 				if (_posOrigenLand isEqualTo []) then {_waves = _waves -2} else {_waves = _waves -1};
 				};
-			if !([vehCSATPlane] call A3A_fnc_vehAvailable) then
+			if ({[_x] call A3A_fnc_vehAvailable} count vehCSATPlane == 0) then
 				{
 				if (_posOrigenLand isEqualTo []) then {_waves = _waves -2} else {_waves = _waves -1};
 				};

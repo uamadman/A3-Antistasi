@@ -1,6 +1,5 @@
 if (!isServer) exitWith {};
-private _params = _this select 0;
-private _function = _this select 1;
+params ["_params","_function"];
 
 if (count hcArray == 0) exitWith {_params remoteExec [_function,2]};
 if (count hcArray == 1) exitWith {_params remoteExec [_function,hcArray select 0]};

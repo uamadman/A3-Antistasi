@@ -1,0 +1,34 @@
+Assets = [
+    [
+        "Occupier",
+        [
+            [
+                "ammoTruck",
+                [
+                    "B_Truck_01_ammo_F"
+                ]
+            ],[
+                "ammoBox",
+                [
+                    "B_supplyCrate_F"
+                ]
+            ]
+        ]
+    ],[
+        "Invader",
+        [
+            [
+                "ammoTruck",
+                [
+                    "O_Truck_03_ammo_F",
+                    "O_Truck_02_Ammo_F"
+                ]
+            ],[
+                "ammoBox",
+                [
+                    "O_supplyCrate_F"
+                ]
+            ]
+        ]
+    ]
+];

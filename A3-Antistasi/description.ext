@@ -42,7 +42,11 @@ class CfgTaskEnhancements
 class CfgFunctions {
     #include "functions.hpp"
     #include "JeroenArsenal\functions.hpp"
+    #include "LARs\spawnComp\functions\functions.cpp"
 };
+
+#include "compositions\compositions.cfg"
+
 class Header
 {
 gameType = COOP;

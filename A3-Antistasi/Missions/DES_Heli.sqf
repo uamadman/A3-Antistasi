@@ -1,6 +1,6 @@
 if (!isServer and hasInterface) exitWith{};
 
-private ["_poscrash","_marcador","_posicion","_mrkfin","_tipoveh","_efecto","_heli","_vehiculos","_soldados","_grupos","_unit","_roads","_road","_vehicle","_veh","_tipogrupo","_tsk","_humo","_emitterArray","_cuenta"];
+private ["_posCrash","_marcador","_posicion","_mrkfin","_tipoveh","_efecto","_heli","_vehiculos","_soldados","_grupos","_unit","_roads","_road","_vehicle","_veh","_tipogrupo","_tsk","_humo","_emitterArray","_cuenta"];
 
 _marcador = _this select 0;
 
@@ -22,8 +22,8 @@ _cuenta = 0;
 _dist = if (_dificil) then {2000} else {3000};
 while {true} do
 	{
-	_poscrashOrig = _posicion getPos [_dist,_ang];
-	if ((!surfaceIsWater _poscrashOrig) and (_poscrashOrig distance _posHQ < 4000)) exitWith {};
+	_posCrashOrig = _posicion getPos [_dist,_ang];
+	if ((!surfaceIsWater _posCrashOrig) and (_posCrashOrig distance _posHQ < 4000)) exitWith {};
 	_ang = _ang + 1;
 	_cuenta = _cuenta + 1;
 	if (_cuenta > 360) then
@@ -32,11 +32,12 @@ while {true} do
 		_dist = _dist - 500;
 		};
 	};
+_vehChoices = vehPlanes + vehAttackHelis + vehTransportAir;
+_tipoVeh = selectRandom _vehChoices;
 
-_tipoVeh = selectRandom (vehPlanes + vehAttackHelis + vehTransportAir);
-
-_posCrashMrk = [_poscrash,random 500,random 360] call BIS_fnc_relPos;
 _posCrash = _posCrashOrig findEmptyPosition [0,100,_tipoVeh];
+_posCrashMrk = [_posCrash,random 500,random 360] call BIS_fnc_relPos;
+
 if (count _posCrash == 0) then
 	{
 	if (!isMultiplayer) then {{ _x hideObject true } foreach (nearestTerrainObjects [_posCrashOrig,["tree","bush"],50])} else {{[_x,true] remoteExec ["hideObjectGlobal",2]} foreach (nearestTerrainObjects [_posCrashOrig,["tree","bush"],50])};
@@ -66,10 +67,10 @@ _vehiculos = [];
 _soldados = [];
 _grupos = [];
 
-_efecto = createVehicle ["CraterLong", _poscrash, [], 0, "CAN_COLLIDE"];
-_heli = createVehicle [_tipoVeh, _poscrash, [], 0, "CAN_COLLIDE"];
+_efecto = createVehicle ["CraterLong", _posCrash, [], 0, "CAN_COLLIDE"];
+_heli = createVehicle [_tipoVeh, _posCrash, [], 0, "CAN_COLLIDE"];
 _heli attachTo [_efecto,[0,0,1.5]];
-_humo = "test_EmptyObjectForSmoke" createVehicle _poscrash; _humo attachTo[_heli,[0,1.5,-1]];
+_humo = "test_EmptyObjectForSmoke" createVehicle _posCrash; _humo attachTo[_heli,[0,1.5,-1]];
 _heli setDamage 0.9;
 _heli lock 2;
 _vehiculos = _vehiculos + [_heli,_efecto];
@@ -85,14 +86,11 @@ while {true} do
 
 _road = _roads select 0;
 _tipoVeh = if (_lado == malos) then {selectRandom vehNATOLightUnarmed} else {selectRandom vehCSATLightUnarmed};
-_vehicle=[position _road, 0,_tipoVeh, _lado] call bis_fnc_spawnvehicle;
+_vehicle = [position _road, 0, _tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 _veh = _vehicle select 0;
-[_veh] call A3A_fnc_AIVEHinit;
 //[_veh,"Escort"] spawn A3A_fnc_inmuneConvoy;
-_vehCrew = _vehicle select 1;
-{[_x] call A3A_fnc_NATOinit} forEach _vehCrew;
 _grupoVeh = _vehicle select 2;
-_soldados = _soldados + _vehCrew;
+_soldados = _soldados + (_vehicle select 1);
 _grupos pushBack _grupoVeh;
 _vehiculos pushBack _veh;
 
@@ -100,31 +98,34 @@ sleep 1;
 _tipogrupo = if (_lado == malos) then {gruposNATOSentry} else {gruposCSATSentry};
 _grupo = [_posicion, _lado, _tipogrupo] call A3A_fnc_spawnGroup;
 
-{_x assignAsCargo _veh; _x moveInCargo _veh; _soldados pushBack _x; [_x] join _grupoveh; [_x] call A3A_fnc_NATOinit} forEach units _grupo;
+{
+    _x assignAsCargo _veh;
+    _x moveInCargo _veh;
+    _soldados pushBack _x;
+    [_x] join _grupoveh;
+    [_x] call A3A_fnc_NATOinit;
+} forEach units _grupo;
 deleteGroup _grupo;
 //[_veh] spawn smokeCover;
 
-_Vwp0 = _grupoVeh addWaypoint [_poscrash, 0];
+_Vwp0 = _grupoVeh addWaypoint [_posCrash, 0];
 _Vwp0 setWaypointType "TR UNLOAD";
 _Vwp0 setWaypointBehaviour "SAFE";
-_Gwp0 = _grupo addWaypoint [_poscrash, 0];
+_Gwp0 = _grupo addWaypoint [_posCrash, 0];
 _Gwp0 setWaypointType "GETOUT";
 _Vwp0 synchronizeWaypoint [_Gwp0];
 
 sleep 15;
 _tipoVeh = if (_lado == malos) then {vehNATOTrucks select 0} else {vehCSATTrucks select 0};
-_vehicleT=[position _road, 0,_tipoVeh, _lado] call bis_fnc_spawnvehicle;
+_vehicleT=[position _road, 0,_tipoVeh, _lado] call A3A_fnc_spawnVehicle;
 _vehT = _vehicleT select 0;
-[_vehT] call A3A_fnc_AIVEHinit;
 //[_vehT,"Recover Truck"] spawn A3A_fnc_inmuneConvoy;
-_vehCrewT = _vehicle select 1;
-{[_x] call A3A_fnc_NATOinit} forEach _vehCrewT;
 _grupoVehT = _vehicleT select 2;
-_soldados = _soldados + _vehCrewT;
+_soldados = _soldados + (_vehicle select 1);
 _grupos pushBack _grupoVehT;
 _vehiculos pushBack _vehT;
 
-_Vwp0 = _grupoVehT addWaypoint [_poscrash, 0];
+_Vwp0 = _grupoVehT addWaypoint [_posCrash, 0];
 _Vwp0 setWaypointType "MOVE";
 _Vwp0 setWaypointBehaviour "SAFE";
 waitUntil {sleep 1; (not alive _heli) or (_vehT distance _heli < 50) or (dateToNumber date > _fechalimnum)};
@@ -145,10 +146,10 @@ if (_vehT distance _heli < 50) then
 	_Vwp0 setWaypointType "MOVE";
 	_Vwp0 setWaypointBehaviour "SAFE";
 
-	_Vwp0 = _grupoVeh addWaypoint [_poscrash, 0];
+	_Vwp0 = _grupoVeh addWaypoint [_posCrash, 0];
 	_Vwp0 setWaypointType "LOAD";
 	_Vwp0 setWaypointBehaviour "SAFE";
-	_Gwp0 = _grupo addWaypoint [_poscrash, 0];
+	_Gwp0 = _grupo addWaypoint [_posCrash, 0];
 	_Gwp0 setWaypointType "GETIN";
 	_Vwp0 synchronizeWaypoint [_Gwp0];
 

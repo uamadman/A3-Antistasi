@@ -128,25 +128,24 @@ if (_esinf) then
 else
 	{
 	_pos = position _road findEmptyPosition [1,30,vehSDKTruck];
-	_vehicle = if (_tipoGrupo == staticAABuenos) then
-		{
-		if (activeGREF) then {[_pos, 0,"rhsgref_ins_g_ural_Zu23", buenos] call bis_fnc_spawnvehicle} else {[_pos, 0,vehSDKTruck, buenos] call bis_fnc_spawnvehicle};
-		}
-	else
-		{
-		[_pos, 0,_tipoGrupo, buenos] call bis_fnc_spawnvehicle
+	_vehicle = if (_tipoGrupo == staticAABuenos) then {
+		if (activeGREF) then {
+		    [_pos, 0,"rhsgref_ins_g_ural_Zu23", buenos] call A3A_fnc_spawnVehicle
+		} else {
+		    [_pos, 0,vehSDKTruck, buenos] call A3A_fnc_spawnVehicle
 		};
+	} else {
+		[_pos, 0,_tipoGrupo, buenos] call A3A_fnc_spawnVehicle
+	};
 	_camion = _vehicle select 0;
 	_grupo = _vehicle select 2;
-	//_mortero attachTo [_camion,[0,-1.5,0.2]];
-	//_mortero setDir (getDir _camion + 180);
 
 	if ((!activeGREF) and (_tipogrupo == staticAABuenos)) then
 		{
 		_pos = _pos findEmptyPosition [1,30,SDKMortar];
 		_morty = _grupo createUnit [staticCrewBuenos, _pos, [],0, "NONE"];
 		_mortero = _tipogrupo createVehicle _pos;
-		_nul = [_mortero] call A3A_fnc_AIVEHinit;
+		_nul = [_mortero, buenos] call A3A_fnc_AIVEHinit;
 		_mortero attachTo [_camion,[0,-1.5,0.2]];
 		_mortero setDir (getDir _camion + 180);
 		_morty moveInGunner _mortero;
@@ -155,7 +154,6 @@ else
 	if (_tipogrupo == staticAABuenos) then {_grupo setGroupId [format ["M.AA-%1",{side (leader _x) == buenos} count allGroups]]};
 
 	driver _camion action ["engineOn", vehicle driver _camion];
-	_nul = [_camion] call A3A_fnc_AIVEHinit;
 	_bypassAI = true;
 	};
 
@@ -214,7 +212,7 @@ vehQuery = nil;
 //if (_resourcesFIA < _coste) exitWith {hint format ["You do not have enough money for this vehicle: %1 € required",_coste]};
 _pos = position _road findEmptyPosition [1,30,"B_G_Van_01_transport_F"];
 _mortero = _tipoVeh createVehicle _pos;
-_nul = [_mortero] call A3A_fnc_AIVEHinit;
+_nul = [_mortero, buenos] call A3A_fnc_AIVEHinit;
 _grupo addVehicle _mortero;
 _mortero setVariable ["owner",_grupo,true];
 _nul = [0, - _coste] remoteExec ["A3A_fnc_resourcesFIA",2];

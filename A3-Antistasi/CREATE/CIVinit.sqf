@@ -32,7 +32,7 @@ _EHkilledIdx = _unit addEventHandler ["killed",
 			{
 			if (!isMultiPlayer) then
 				{
-				_nul = [0,20] remoteExec ["A3A_fnc_resourcesFIA",2];
+				_nul = [0,-20] remoteExec ["A3A_fnc_resourcesFIA",2];
 				_killer addRating 1000;
 				}
 			else

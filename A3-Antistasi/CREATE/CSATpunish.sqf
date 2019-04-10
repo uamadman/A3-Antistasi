@@ -1,5 +1,5 @@
 if (!isServer and hasInterface) exitWith {};
-private ["_posorigen","_tipogrupo","_nombreorig","_markTsk","_wp1","_soldados","_landpos","_pad","_vehiculos","_wp0","_wp3","_wp4","_wp2","_grupo","_grupos","_tipoveh","_vehicle","_heli","_heliCrew","_grupoheli","_pilotos","_rnd","_resourcesAAF","_nVeh","_tam","_roads","_Vwp1","_tanques","_road","_veh","_vehCrew","_grupoVeh","_Vwp0","_size","_Hwp0","_grupo1","_uav","_grupouav","_uwp0","_tsk","_vehiculo","_soldado","_piloto","_mrkdestino","_posdestino","_prestigeCSAT","_base","_aeropuerto","_nombredest","_tiempo","_solMax","_nul","_pos","_timeOut"];
+private ["_posorigen","_tipogrupo","_nombreorig","_markTsk","_wp1","_soldados","_landpos","_pad","_vehiculos","_wp0","_wp3","_wp4","_wp2","_grupo","_grupos","_tipoveh","_vehicle","_heli","_grupoheli","_pilotos","_rnd","_resourcesAAF","_nVeh","_tam","_roads","_Vwp1","_tanques","_road","_veh","_vehCrew","_grupoVeh","_Vwp0","_size","_Hwp0","_grupo1","_uav","_grupouav","_uwp0","_tsk","_vehiculo","_soldado","_piloto","_mrkdestino","_posdestino","_prestigeCSAT","_base","_aeropuerto","_nombredest","_tiempo","_solMax","_nul","_pos","_timeOut"];
 _mrkDestino = _this select 0;
 _mrkOrigen = _this select 1;
 bigAttackInProgress = true;
@@ -32,29 +32,28 @@ for "_i" from 1 to 3 do
 		sleep 1;
 		};
 	if (count _pos == 0) then {_pos = _posorigen};
-	_vehicle=[_pos, 0, _tipoveh, muyMalos] call bis_fnc_spawnvehicle;
+	_vehicle = [_pos, 0, _tipoveh, muyMalos] call A3A_fnc_spawnVehicle;
 	_heli = _vehicle select 0;
-	_heliCrew = _vehicle select 1;
-	{[_x] call A3A_fnc_NATOinit} forEach _heliCrew;
-	[_heli] call A3A_fnc_AIVEHinit;
 	_grupoheli = _vehicle select 2;
-	_pilotos = _pilotos + _heliCrew;
+	_pilotos = _pilotos + (_vehicle select 1);
 	_grupos pushBack _grupoheli;
 	_vehiculos pushBack _heli;
 	//_heli lock 3;
-	if (not(_tipoveh in vehCSATTransportHelis)) then
-		{
-		{[_x] call A3A_fnc_NATOinit} forEach _heliCrew;
+	if (!(_tipoveh in vehCSATTransportHelis)) then {
 		_wp1 = _grupoheli addWaypoint [_posdestino, 0];
 		_wp1 setWaypointType "SAD";
 		//[_heli,"Air Attack"] spawn A3A_fnc_inmuneConvoy;
-		}
-	else
-		{
+	} else {
 		{_x setBehaviour "CARELESS";} forEach units _grupoheli;
 		_tipoGrupo = [_tipoVeh,muyMalos] call A3A_fnc_cargoSeats;
 		_grupo = [_posOrigen, muyMalos, _tipoGrupo] call A3A_fnc_spawnGroup;
-		{_x assignAsCargo _heli;_x moveInCargo _heli; _soldados pushBack _x; [_x] call A3A_fnc_NATOinit; _x setVariable ["origen",_mrkOrigen]} forEach units _grupo;
+		{
+		    _x assignAsCargo _heli;
+		    _x moveInCargo _heli;
+		    _soldados pushBack _x;
+		    [_x] call A3A_fnc_NATOinit;
+		    _x setVariable ["origen",_mrkOrigen];
+		} forEach units _grupo;
 		_grupos pushBack _grupo;
 		//[_heli,"CSAT Air Transport"] spawn A3A_fnc_inmuneConvoy;
 
@@ -94,7 +93,7 @@ for "_i" from 1 to 3 do
 			{_x disableAI "TARGET"; _x disableAI "AUTOTARGET"} foreach units _grupoheli;
 			[_heli,_grupo,_posdestino,_posorigen,_grupoheli] spawn A3A_fnc_fastrope;
 			};
-		};
+	};
 	sleep 20;
 	};
 
@@ -140,7 +139,7 @@ _solMax = count _soldados;
 
 for "_i" from 0 to round random 2 do
 	{
-	if ([vehCSATPlane] call A3A_fnc_vehAvailable) then
+	if ({[_x] call A3A_fnc_vehAvailable} count vehCSATPlane > 0) then
 		{
 		_nul = [_mrkdestino,muyMalos,"NAPALM"] spawn A3A_fnc_airstrike;
 		sleep 30;

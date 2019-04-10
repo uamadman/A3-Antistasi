@@ -92,7 +92,7 @@ player createDiaryRecord ["Diary",["Win","You will win the game when most of the
 
 _nombreMiss = if (hayIFA) then {"Armia Krajowa"} else {if (worldName == "Tanoa") then {"Warlords of the Pacific"} else {"Antistasi"}};
 
-player createDiaryRecord ["Diary",["Welcome",format ["Welcome to Arma 3 - %1. This mission aims to simulate guerilla combat, tactics and strategic situations. It is not a quick and easy mod, it is long term, step-by-step mission with LOTS of features and enhanced AI.",_nombreMiss]]];
+player createDiaryRecord ["Diary",["Welcome",format ["Welcome to Arma 3 - %1. This mission aims to simulate guerilla combat, tactics and strategic situations. It is not a quick and easy mod, it is long term, step-by-step mission with LOTS of features and enhanced AI.", _nombreMiss]]];
 }
 else
 {

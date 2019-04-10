@@ -20,8 +20,7 @@ switch (_tipo) do
 	*/
 	};
 /*
-if (isMultiPlayer) then
-	{
+if (isMultiPlayer) then {
 	sleep 5;
 	hint format ["You have selected %1",_texto];
-	};
+};

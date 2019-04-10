@@ -27,7 +27,9 @@ _tipo = typeOf _veh;
 _puntos = 2;
 
 if (_tipo in vehAttackHelis) then {_puntos = 5};
-if ((_tipo == vehCSATPlane) or (_tipo == vehNATOPlane)) then {_puntos = 10};
+if (_tipo in (vehCSATPlane + vehNATOPlane)) then {_puntos = 10};
+if (_tipo in (vehCSATPlaneAA + vehNATOPlaneAA)) then {_puntos = 8};
+
 deleteVehicle _veh;
 hint format ["Air Support increased in %1 points",_puntos];
 bombRuns = bombRuns + _puntos;

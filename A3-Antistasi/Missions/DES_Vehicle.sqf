@@ -1,6 +1,7 @@
 if (!isServer and hasInterface) exitWith{};
 
-private ["_marcador","_posicion","_fechalim","_fechalimnum","_nombredest","_tipoVeh","_texto","_camionCreado","_size","_pos","_veh","_grupo","_unit"];
+private ["_marcador","_posicion","_fechalim","_fechalimnum","_nombredest","_tipoVeh","_texto","_camionCreado","_size","_pos","_veh","_grupo","_unit","_task_description","_mrk","_sentryGroup1","_sentryGroup2","_dog1","_dog2"];
+
 
 _marcador = _this select 0;
 
@@ -11,15 +12,18 @@ _grpContacto = grpNull;
 _tsk = "";
 _posicion = getMarkerPos _marcador;
 _lado = if (lados getVariable [_marcador,sideUnknown] == malos) then {malos} else {muyMalos};
-_tiempolim = if (_dificil) then {30} else {120};
+_tiempolim = if (_dificil) then {45} else {120};
 if (hayIFA) then {_tiempolim = _tiempolim * 2};
 _fechalim = [date select 0, date select 1, date select 2, date select 3, (date select 4) + _tiempolim];
 _fechalimnum = dateToNumber _fechalim;
 _nombredest = [_marcador] call A3A_fnc_localizar;
 
-_tipoVeh = if (_lado == malos) then {vehNATOAA} else {vehCSATAA};
-
-[[buenos,civilian],"DES",[format ["We know an enemy armor (%4) is stationed in %1. It is a good chance to destroy or steal it before it causes more damage. Do it before %2:%3.",_nombredest,numberToDate [2035,_fechalimnum] select 3,numberToDate [2035,_fechalimnum] select 4,getText (configFile >> "CfgVehicles" >> (_tipoVeh) >> "displayName")],"Steal or Destroy Armor",_marcador],_posicion,false,0,true,"Destroy",true] call BIS_fnc_taskCreate;
+_tipoVeh = if (_lado == malos) then {selectRandom vehNATOAA} else {selectRandom vehCSATAA};
+    _task_description = [format ["We know an enemy armor (%4) is stationed in %1. It is a good chance to destroy or steal it before it causes more damage. Do it before %2:%3.",_nombredest,numberToDate [2035,_fechalimnum] select 3,numberToDate [2035,_fechalimnum] select 4, getText (configFile >> "CfgVehicles" >> (_tipoVeh) >> "displayName")],
+    "Steal or Destroy Armor",
+    _marcador
+];
+[[buenos,civilian],"DES",_task_description,_posicion,false,0,true,"Destroy",true] call BIS_fnc_taskCreate;
 _camionCreado = false;
 misiones pushBack ["DES","CREATED"]; publicVariable "misiones";
 
@@ -34,7 +38,7 @@ if (spawner getVariable _marcador == 0) then
 	_veh = createVehicle [_tipoVeh, _pos, [], 0, "NONE"];
 	_veh allowdamage false;
 	_veh setDir random 360;
-	[_veh] call A3A_fnc_AIVEHinit;
+	[_veh, _lado] call A3A_fnc_AIVEHinit;
 
 	_grupo = createGroup _lado;
 
@@ -47,6 +51,31 @@ if (spawner getVariable _marcador == 0) then
 		[_unit,""] call A3A_fnc_NATOinit;
 		sleep 2;
 		};
+
+    //guard dog patrol to protect vehicle
+    _vehPosition = getPos _veh;
+    _mrk = createMarkerLocal [format ["%1vehicleprotectarea", floor random 100], _vehPosition];
+    _mrk setMarkerShapeLocal "RECTANGLE";
+    _mrk setMarkerSizeLocal [25,25];
+    _mrk setMarkerTypeLocal "hd_warning";
+    _mrk setMarkerColorLocal "ColorRed";
+    _mrk setMarkerBrushLocal "DiagGrid";
+    _mrk setMarkerAlphaLocal 0;
+    _typeSentryGroup = if (_lado == malos) then {gruposNATOSentry} else {gruposCSATSentry};
+    _sentryGroup1 = [_vehPosition, _lado, _typeSentryGroup] call A3A_fnc_spawnGroup;
+    sleep 1;
+    _dog1 = _sentryGroup1 createUnit ["Fin_random_F",_vehPosition,[],0,"FORM"];
+    [_dog1] spawn A3A_fnc_guardDog;
+    _nul = [leader _sentryGroup1, _mrk, "SAFE","SPAWNED", "NOVEH2", "NOFOLLOW"] execVM "scripts\UPSMON.sqf";
+    {[_x,""] call A3A_fnc_NATOinit} forEach units _sentryGroup1;
+
+    _sentryGroup2 = [_vehPosition, _lado, _typeSentryGroup] call A3A_fnc_spawnGroup;
+    sleep 1;
+    _dog2 = _sentryGroup2 createUnit ["Fin_random_F",_vehPosition,[],0,"FORM"];
+    [_dog2] spawn A3A_fnc_guardDog;
+    _nul = [leader _sentryGroup2, _mrk, "SAFE","SPAWNED", "NOVEH2", "NOFOLLOW"] execVM "scripts\UPSMON.sqf";
+    {[_x,""] call A3A_fnc_NATOinit} forEach units _sentryGroup2;
+
 
 	if (_dificil) then
 		{
@@ -92,5 +121,10 @@ if (_camionCreado) then
 	{
 	{deleteVehicle _x} forEach units _grupo;
 	deleteGroup _grupo;
+	{deleteVehicle _x} forEach units _sentryGroup1;
+    deleteGroup _sentryGroup1;
+    {deleteVehicle _x} forEach units _sentryGroup2;
+    deleteGroup _sentryGroup2;
+    deleteMarker _mrk;
 	if (!([distanciaSPWN,1,_veh,buenos] call A3A_fnc_distanceUnits)) then {deleteVehicle _veh};
 	};

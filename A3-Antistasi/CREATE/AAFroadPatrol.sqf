@@ -1,31 +1,33 @@
-private ["_soldados","_vehiculos","_grupos","_base","_posBase","_roads","_tipoCoche","_arrayaeropuertos","_arrayDestinos","_tam","_road","_veh","_vehCrew","_grupoVeh","_grupo","_grupoP","_distancia","_spawnPoint"];
+private ["_posBase","_tipoCoche","_arrayDestinos","_tam","_road","_veh","_grupoVeh","_grupo","_grupoP","_distancia",
+"_spawnPoint","_sentryGroup"];
 
-_soldados = [];
-_vehiculos = [];
-_grupos = [];
-_base = "";
-_roads = [];
+private _soldados = [];
+private _vehiculos = [];
+private _grupos = [];
+private _base = "";
+private _roads = [];
 
-_arrayAeropuertos = if (hayIFA) then {(aeropuertos + puestos) select {((spawner getVariable _x != 0)) and (lados getVariable [_x,sideUnknown] != buenos)}} else {(puertos + aeropuertos + puestos) select {((spawner getVariable _x != 0)) and (lados getVariable [_x,sideUnknown] != buenos)}};
+private _arrayAeropuertos = if (hayIFA) then {
+        (aeropuertos + puestos) select {((spawner getVariable _x != 0)) and (lados getVariable [_x,sideUnknown] != buenos)}
+    } else {
+        (puertos + aeropuertos + puestos) select {((spawner getVariable _x != 0)) and (lados getVariable [_x,sideUnknown] != buenos)}
+};
 
-_arrayAeropuertos1 = [];
-if !(isMultiplayer) then
+private _arrayAeropuertos1 = [];
+if !(isMultiplayer) then {
 	{
-	{
-	_aeropuerto = _x;
-	_pos = getMarkerPos _aeropuerto;
-	//if (allUnits findIf {(_x getVariable ["spawner",false]) and (_x distance2d _pos < distanceForLandAttack)} != -1) then {_arrayAeropuertos1 pushBack _aeropuerto};
-	if ([distanceForLandAttack,1,_pos,buenos] call A3A_fnc_distanceUnits) then {_arrayAeropuertos1 pushBack _aeropuerto};
+	    _aeropuerto = _x;
+	    _pos = getMarkerPos _aeropuerto;
+	    //if (allUnits findIf {(_x getVariable ["spawner",false]) and (_x distance2d _pos < distanceForLandAttack)} != -1) then {_arrayAeropuertos1 pushBack _aeropuerto};
+	    if ([distanceForLandAttack,1,_pos,buenos] call A3A_fnc_distanceUnits) then {_arrayAeropuertos1 pushBack _aeropuerto};
 	} forEach _arrayAeropuertos;
-	}
-else
+} else {
 	{
-	{
-	_aeropuerto = _x;
-	_pos = getMarkerPos _aeropuerto;
-	if (playableUnits findIf {(side (group _x) == buenos) and (_x distance2d _pos < distanceForLandAttack)} != -1) then {_arrayAeropuertos1 pushBack _aeropuerto};
+	    _aeropuerto = _x;
+	    _pos = getMarkerPos _aeropuerto;
+	    if (playableUnits findIf {(side (group _x) == buenos) and (_x distance2d _pos < distanceForLandAttack)} != -1) then {_arrayAeropuertos1 pushBack _aeropuerto};
 	} forEach _arrayAeropuertos;
-	};
+};
 if (_arrayAeropuertos1 isEqualTo []) exitWith {};
 
 _base = selectRandom _arrayAeropuertos1;
@@ -43,12 +45,15 @@ if (lados getVariable [_base,sideUnknown] == malos) then
 		{
 		if (random 100 < prestigeNATO) then
 			{
-			_tipoCoche = if (_base in aeropuertos) then {selectRandom (vehNATOLight + [vehNATOPatrolHeli])} else {selectRandom vehNATOLight};
-			if (_tipoCoche == vehNATOPatrolHeli) then {_tipoPatrol = "AIR"};
+			_tipoCoche = vehNATOLight;
+			if (_base in aeropuertos) then {_tipoCoche pushback vehNATOPatrolHeli};
+			_tipoCoche =  selectRandom (_tipoCoche  select {[_x] call A3A_fnc_vehAvailable});
+			if (_tipoCoche == vehNATOPatrolHeli) then
+			    {_tipoPatrol = "AIR"};
 			}
 		else
 			{
-			_tipoCoche = selectRandom [vehPoliceCar,vehFIAArmedCar];
+			_tipoCoche = selectRandom vehPoliceCar + [vehFIAArmedCar];
 			};
 		};
 	}
@@ -62,7 +67,10 @@ else
 		}
 	else
 		{
-		_tipoCoche = if (_base in aeropuertos) then {selectRandom (vehCSATLight + [vehCSATPatrolHeli])} else {selectRandom vehCSATLight};
+
+		_tipoCoche = vehCSATLight;
+		if (_base in aeropuertos) then {_tipoCoche pushback vehCSATPatrolHeli};
+		_tipoCoche =  selectRandom (_tipoCoche  select {[_x] call A3A_fnc_vehAvailable});
 		if (_tipoCoche == vehCSATPatrolHeli) then {_tipoPatrol = "AIR"};
 		};
 	};
@@ -115,32 +123,29 @@ if (_tipoPatrol != "AIR") then
 		};
 	};
 
-_vehicle=[_posBase, 0,_tipoCoche, _lado] call bis_fnc_spawnvehicle;
+_vehicle = [_posBase, 0,_tipoCoche, _lado] call A3A_fnc_spawnVehicle;
 _veh = _vehicle select 0;
-[_veh] call A3A_fnc_AIVEHinit;
 [_veh,"Patrol"] spawn A3A_fnc_inmuneConvoy;
-_vehCrew = _vehicle select 1;
-{[_x] call A3A_fnc_NATOinit} forEach _vehCrew;
+
 _grupoVeh = _vehicle select 2;
-_soldados = _soldados + _vehCrew;
 _grupos = _grupos + [_grupoVeh];
 _vehiculos = _vehiculos + [_veh];
-
-
-if (_tipoCoche in vehNATOLightUnarmed) then
+if (_tipoCoche in (vehNATOLightUnarmed + vehCSATLightUnarmed)) then {
+    sleep 1;
+    gruposNATOSentry;
+    _sentryGroup = if (_tipoCoche in vehNATOLightUnarmed) then {gruposNATOSentry} else {gruposCSATSentry};
+	_grupo = [_posbase, _lado, _sentryGroup] call A3A_fnc_spawnGroup;
 	{
-	sleep 1;
-	_grupo = [_posbase, _lado, gruposNATOSentry] call A3A_fnc_spawnGroup;
-	{_x assignAsCargo _veh;_x moveInCargo _veh; _soldados pushBack _x; [_x] joinSilent _grupoveh; [_x] call A3A_fnc_NATOinit} forEach units _grupo;
+	    _x assignAsCargo _veh;
+	    _x moveInCargo _veh;
+	    _soldados pushBack _x;
+	    [_x] joinSilent _grupoveh;
+	} forEach units _grupo;
 	deleteGroup _grupo;
-	};
-if (_tipoCoche in vehCSATLightUnarmed) then
-	{
-	sleep 1;
-	_grupo = [_posbase, _lado, gruposCSATSentry] call A3A_fnc_spawnGroup;
-	{_x assignAsCargo _veh;_x moveInCargo _veh; _soldados pushBack _x; [_x] joinSilent _grupoveh; [_x] call A3A_fnc_NATOinit} forEach units _grupo;
-	deleteGroup _grupo;
-	};
+};
+
+{[_x] call A3A_fnc_NATOinit} forEach _soldados;
+_soldados = _soldados + (_vehicle select 1);
 
 //if (_tipoPatrol == "LAND") then {_veh forceFollowRoad true};
 

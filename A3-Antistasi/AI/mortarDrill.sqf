@@ -64,7 +64,7 @@ _grupo addVehicle _mortero;
 _morty assignAsGunner _mortero;
 [_morty] orderGetIn true;
 [_morty] allowGetIn true;
-_nul = [_mortero] call A3A_fnc_AIVEHinit;
+_nul = [_mortero, side _grupo] call A3A_fnc_AIVEHinit;
 _movable = _grupo getVariable ["movable",[]];
 _movable pushBack _ayudante;
 _grupo setVariable ["movable",_movable];

@@ -1,4 +1,4 @@
-if (bombRuns < 1) exitWith {hint "You lack of enough Air Support to make this request"};
+if (bombRuns < 1) exitWith {hint "You don't have enough Air Support points to make this request"};
 //if (!allowPlayerRecruit) exitWith {hint "Server is very loaded. \nWait one minute or change FPS settings in order to fulfill this request"};
 	if (!([player] call A3A_fnc_hasRadio)) exitWith {if !(hayIFA) then {hint "You need a radio in your inventory to be able to give orders to other squads"} else {hint "You need a Radio Man in your group to be able to give orders to other squads"}};
 if ({lados getVariable [_x,sideUnknown] == buenos} count aeropuertos == 0) exitWith {hint "You need to control an airport in order to fulfill this request"};
@@ -56,7 +56,7 @@ _angorig = _ang - 180;
 _origpos = [_pos1, 2500, _angorig] call BIS_fnc_relPos;
 _finpos = [_pos2, 2500, _ang] call BIS_fnc_relPos;
 
-_planefn = [_origpos, _ang, vehSDKPlane, buenos] call bis_fnc_spawnvehicle;
+_planefn = [_origpos, _ang, vehSDKPlane, buenos] call A3A_fnc_spawnVehicle;
 _plane = _planefn select 0;
 _plane setPosATL [getPosATL _plane select 0, getPosATL _plane select 1, 1000];
 _plane disableAI "TARGET";
@@ -86,9 +86,8 @@ waitUntil {sleep 1; (currentWaypoint group _plane == 4) or (!canMove _plane)};
 
 deleteMarkerLocal _mrkOrig;
 deleteMarkerLocal _mrkDest;
-if ((!canMove _plane) and (!isNull _plane)) then
-	{
+if ((!canMove _plane) and (!isNull _plane)) then {
 	sleep cleantime;
 	{deleteVehicle _x} forEach crew _plane; deleteVehicle _plane;
 	deleteGroup group _plane;
-	};
+};

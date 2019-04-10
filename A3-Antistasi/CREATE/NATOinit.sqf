@@ -1,6 +1,7 @@
-private ["_unit","_veh","_lado","_tipo","_skill","_riflefinal","_magazines","_hmd","_marcador","_revelar"];
+params ["_unit","_marcador"];
+private ["_veh","_lado","_tipo","_skill","_riflefinal","_magazines","_hmd","_revelar","_policeGuns"];
 
-_unit = _this select 0;
+
 if (isNil "_unit") exitWith {diag_log format ["Antistasi: Error enviando a NATOinit los parámetros:%1",_this]};
 if (isNull _unit) exitWith {diag_log format ["Antistasi: Error enviando a NATOinit los parámetros:%1",_this]};
 _tipo = typeOf _unit;
@@ -10,15 +11,14 @@ _lado = side _unit;
 _unit addEventHandler ["HandleDamage",A3A_fnc_handleDamageAAF];
 
 _unit addEventHandler ["killed",A3A_fnc_AAFKilledEH];
-if (count _this > 1) then
-	{
-	_marcador = _this select 1;
-	if (_marcador != "") then
-		{
+if (count _this > 1) then {
+	if (_marcador != "") then {
 		_unit setVariable ["marcador",_marcador,true];
-		if ((spawner getVariable _marcador != 0) and (vehicle _unit != _unit)) then {if (!isMultiplayer) then {_unit enableSimulation false} else {[_unit,false] remoteExec ["enableSimulationGlobal",2]}};
+		if ((spawner getVariable _marcador != 0) and (vehicle _unit != _unit)) then {
+		    [_unit,false] remoteExec ["enableSimulationGlobal",2];
 		};
-	}
+	};
+}
 else
 	{
 	if (vehicle _unit != _unit) then
@@ -29,7 +29,6 @@ else
 			//if (typeOf _veh in vehAPCs) then {if (isMultiplayer) then {[_unit,false] remoteExec ["enableSimulationGlobal",2]} else {_unit enableSimulation false}};
 			_unit addEventHandler ["GetOutMan",
 				{
-				_unit = _this select 0;
 				_veh = _this select 2;
 				_driver = driver _veh;
 				if (!isNull _driver) then
@@ -83,18 +82,39 @@ else
 	else
 		{
 		_skill = _skill min 0.2;
-		if ((tierWar > 1) and !hayIFA) then
-			{
-			_rifleFinal = primaryWeapon _unit;
-			_magazines = getArray (configFile / "CfgWeapons" / _rifleFinal / "magazines");
-			{_unit removeMagazines _x} forEach _magazines;
-			_unit removeWeaponGlobal (_rifleFinal);
-			if (tierWar < 5) then {[_unit, "arifle_MX_Black_F", 6, 0] call BIS_fnc_addWeapon} else {[_unit, "arifle_AK12_F", 6, 0] call BIS_fnc_addWeapon};
-			_unit selectWeapon (primaryWeapon _unit);
-			};
+        if(!hayIFA) then {
+            if(worldName != "Tanoa") then {
+		        if(typeOf _unit == "B_GEN_Soldier_F") then {
+	    	        _unit addVest "V_TacVest_blk_POLICE";
+                    if(typeOf _unit == policeGrunt) then {
+                        _unit addHeadgear selectRandom ["H_Cap_police","H_Cap_police","H_MilCap_blue","H_WirelessEarpiece_F"];
+                    };
+                };
+                if(typeOf _unit == "B_GEN_Commander_F") then {
+                _unit addVest "V_TacVest_blk_POLICE";
+               };
+            };
+            _policeGuns = policeLowTierGuns;
+		    if (tierWar > 1) then {
+			    if (tierWar < 5) then {
+			       _policeGuns = policeLowTierGuns + policeMediumTierGuns;
+			    } else {
+			        _policeGuns = policeMediumTierGuns + policeHighTierGuns;
+			         if (tierWar > 7) then {
+			            _policeGuns = _policeGuns + policeTopTierGuns;
+			         }
+			    };
+		    };
+		    _rifleFinal = primaryWeapon _unit;
+            _magazines = getArray (configFile / "CfgWeapons" / _rifleFinal / "magazines");
+            {_unit removeMagazines _x} forEach _magazines;
+            _unit removeWeaponGlobal (_rifleFinal);
+            [_unit, selectRandom _policeGuns, 6, 0] call BIS_fnc_addWeapon;
+            _unit addPrimaryWeaponItem "optic_ACO_grn";
+            _unit selectWeapon (primaryWeapon _unit);
 		};
 	};
-
+};
 if (_skill > 0.58) then {_skill = 0.58};
 _unit setSkill _skill;
 if (not(_tipo in sniperUnits)) then

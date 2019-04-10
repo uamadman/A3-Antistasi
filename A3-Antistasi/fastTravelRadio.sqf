@@ -100,6 +100,8 @@ if (count _posicionTel > 0) then
 						};
 					_road = _roads select 0;
 					_pos = position _road findEmptyPosition [10,100,typeOf (vehicle _unit)];
+					if(count _pos == 0) then {_pos = position _road findEmptyPosition [10,200,typeOf (vehicle _unit)];};
+					if(count _pos == 0) exitWith {Hint "Cannot Fast Travel. Couldn't find empty space for vehicle"; openMap [false,false]};
 					vehicle _unit setPos _pos;
 					};
 				if ((vehicle _unit isKindOf "StaticWeapon") and (!isPlayer (leader _unit))) then

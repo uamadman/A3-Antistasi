@@ -8,7 +8,7 @@ private _veh = objNull;
 private _lado = side _grupo;
 private _tipoVeh = 	if !(_esMortero) then
 						{
-						if (_lado == malos) then {NATOMG} else {if (_lado == muyMalos) then {CSATMG} else {SDKMGStatic}};
+						if (_lado == malos) then {selectRandom NATORaisedStatics} else {if (_lado == muyMalos) then {selectRandom CSATRaisedStatics} else {SDKMGStatic}};
 						}
 					else
 						{
@@ -80,7 +80,7 @@ while {(alive _gunner)} do
 						[_gunner] orderGetIn true;
 						[_gunner] allowGetIn true;
 						_gunner moveInGunner _veh;
-						[_veh] call A3A_fnc_AIVEHinit;
+						[_veh, _lado] call A3A_fnc_AIVEHinit;
 						_mounted = true;
 						if (_esMortero) then {_grupo setVariable ["morteros",_gunner]};
 						sleep 60;

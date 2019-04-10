@@ -122,21 +122,23 @@ while {true} do
 	_allHPs = allPlayers - _allHCs;                                 //Identify all current players
 	_members = [];                                                  //Variable with the intent of holding the members list
 	_dinero = 0;
-
+	_tax_available = round(_recAddSDK * _tax_percent);              //Break out the available tax
+	_recAddSDK = _recAddSDK - _tax_available;                       //Remove that value from the faction tax
 
 	if (membershipEnabled) then {{                                  //Figure out if membership is enabled
-		_tax_available = round(_recAddSDK * _tax_percent);          //Break out the available tax
-		_recAddSDK = _recAddSDK - _tax_available;                   //Remove that value from the faction tax
-		if ([_x] call A3A_fnc_isMember) then {                      //Figure out if _x_player is a member
-			_members = _members + [_x];                             //Add _x_player to the members list
+	    if ([_x] call A3A_fnc_isMember) then {                      //Figure out if _x_player is a member
+	        _members = _members + [_x];                             //Add _x_player to the members list
 				};
-		}forEach _allHPs;                                           //Lets do this and find each member
-		_tax_per_member = _tax_available + count(_members);         //Set the tax payout
-		_dinero = _tax_per_member + (_x getVariable "dinero");      //Lets add the Tax to the pile of Dinero
-		if (_dinero < 0) then {_dinero = 0};                        //Check to see if its less than 0
-		_x setVariable ["dinero",_dinero,true];                     //Set the magical dinero value to its new value
-		//["dinero",_dinero] call fn_SaveStat;                        //Save this players Dineros!
-		}forEach _members;                                          //For all the members please
+	    }forEach _allHPs;                                           //Lets do this and find each member
+	};
+	_tax_per_member = _tax_available + count(_members);             //Set the tax payout
+
+	if (membershipEnabled) then {{                                  //Figure out if membership is enabled
+	    _dinero = _tax_per_member + (_x getVariable "dinero");      //Lets add the Tax to the pile of Dinero
+	    if (_dinero < 0) then {_dinero = 0};                        //Check to see if its less than 0
+	    _x setVariable ["dinero",_dinero,true];                     //Set the magical dinero value to its new value
+	    //["dinero",_dinero] call fn_SaveStat;                        //Save this players Dineros!
+	    }forEach _members;                                          //For all the members please
 	};
 	[] spawn A3A_fnc_statistics;                                    //Lets update the player information
 

@@ -88,12 +88,12 @@ def get_position(position, class_controls, button=0):
                     control_position == 'background_frame' or \
                     control_position == 'back_button':
                 control_count -= 1
+        if control_count % 2 != 0:
+            control_count += 1
         if int(control_count / 2) < 1:
             cc = 1
         else:
             cc = int(control_count / 2)
-        if control_count % 2 != 0:
-            control_count += 1
         if position == 'background':
             return gen_position_attributes(bkgd_x, bkgd_y, bkgd_w, (cc * .1) + bkgd_h)
         elif position == 'background_frame':

@@ -53,7 +53,7 @@ class HQ_menu {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.45 * safezoneH;
+			h = 0.55 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -62,7 +62,7 @@ class HQ_menu {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.41 * safezoneH;
+			h = 0.51 * safezoneH;
 		};
 		class HQ_button_back: RscButton
 		{
@@ -352,7 +352,7 @@ class minebuild_menu {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.25 * safezoneH;
+			h = 0.35 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -361,7 +361,7 @@ class minebuild_menu {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.21 * safezoneH;
+			h = 0.31 * safezoneH;
 		};
 		class HQ_button_back: RscButton
 		{
@@ -770,7 +770,7 @@ class game_options {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.35 * safezoneH;
+			h = 0.45 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -779,7 +779,7 @@ class game_options {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.31 * safezoneH;
+			h = 0.41 * safezoneH;
 		};
 		class HQ_button_back: RscButton
 		{
@@ -1017,7 +1017,7 @@ class mission_menu {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.45 * safezoneH;
+			h = 0.55 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -1026,7 +1026,7 @@ class mission_menu {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.41 * safezoneH;
+			h = 0.51 * safezoneH;
 		};
 		class HQ_button_back: RscButton
 		{
@@ -2228,7 +2228,7 @@ class tu_madre {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.25 * safezoneH;
+			h = 0.35 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -2237,7 +2237,7 @@ class tu_madre {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.21 * safezoneH;
+			h = 0.31 * safezoneH;
 		};
 		class HQ_button_back: RscListBox
 		{
@@ -2575,7 +2575,7 @@ class mbt_type {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.25 * safezoneH;
+			h = 0.35 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -2584,7 +2584,7 @@ class mbt_type {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.21 * safezoneH;
+			h = 0.31 * safezoneH;
 		};
 		class HQ_button_back: RscButton
 		{
@@ -2711,7 +2711,7 @@ class diff_menu {
 			x = 0.25 * safezoneW + safezoneX;
 			y = 0.22 * safezoneH + safezoneY;
 			w = 0.46 * safezoneW;
-			h = 0.25 * safezoneH;
+			h = 0.35 * safezoneH;
 		};
 		class HQ_frame: RscFrame
 		{
@@ -2720,7 +2720,7 @@ class diff_menu {
 			x = 0.27 * safezoneW + safezoneX;
 			y = 0.24 * safezoneH + safezoneY;
 			w = 0.42 * safezoneW;
-			h = 0.21 * safezoneH;
+			h = 0.31 * safezoneH;
 		};
 		class HQ_button_mortar: RscButton
 		{
